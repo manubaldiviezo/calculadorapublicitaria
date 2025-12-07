@@ -3,302 +3,162 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANU | Calculadora Estratégica</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>MANU | Growth & ROI Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand: #FF3300; /* Naranja MANU */
-            --bg-main: #121212; /* Negro carbón elegante */
-            --bg-panel: #1c1c1c;
-            --border: #333333;
-            --text-primary: #ffffff;
-            --text-secondary: #999999;
+            /* MANU BRANDING */
+            --primary: #FF3300;       /* Naranja Intenso */
+            --primary-dim: #4d1505;   /* Fondo tenue naranja */
+            
+            /* UI COLORS */
+            --bg-body: #080808;       /* Casi negro */
+            --bg-panel: #111111;      /* Panel gris muy oscuro */
+            --bg-input: #1a1a1a;
+            --border: #2a2a2a;
+            --text-main: #e0e0e0;
+            --text-muted: #808080;
+            
+            /* STATUS COLORS */
+            --profit: #00C851;
+            --risk: #ffbb33;
+            --loss: #ff4444;
         }
 
-        * { border-box: border-box; margin: 0; padding: 0; outline: none; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-primary);
-            display: flex;
-            height: 100vh;
-            overflow: hidden;
-        }
-
-        /* --- SECCIÓN IZQUIERDA: INPUTS --- */
-        .input-panel {
-            width: 400px;
-            background: var(--bg-panel);
-            border-right: 1px solid var(--border);
-            padding: 40px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
 
-        .brand-header {
-            font-weight: 700; font-size: 1.2rem; letter-spacing: 1px; margin-bottom: 40px;
+        /* HEADER */
+        header {
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 3rem;
+            background: var(--bg-panel);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .brand-header span { color: var(--brand); }
 
-        .form-group { margin-bottom: 25px; }
-        
-        label {
-            display: block;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-secondary);
-            margin-bottom: 10px;
+        .brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #fff;
+        }
+        .brand span { color: var(--primary); }
+        .brand-sub { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; margin-left: 10px; }
+
+        /* MAIN GRID */
+        .app-container {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            flex: 1;
+            height: calc(100vh - 80px);
+        }
+
+        /* --- LEFT PANEL: BUSINESS DATA AUDIT --- */
+        .sidebar {
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border);
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .input-section h3 {
+            font-size: 0.75rem;
+            color: var(--primary);
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1.5px;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 0.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1.2rem;
+        }
+
+        .form-row.dual {
+            flex-direction: row;
+            gap: 1rem;
+        }
+
+        label {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
         }
 
         input, select {
-            width: 100%;
-            background: var(--bg-main);
+            background: var(--bg-input);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 15px;
-            color: var(--text-primary);
-            font-family: 'Inter', sans-serif;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: 'Space Grotesk', sans-serif;
             font-size: 1rem;
             transition: border-color 0.2s;
+            width: 100%;
         }
 
-        input:focus, select:focus { border-color: var(--brand); }
-
-        .margin-info {
-            margin-top: auto;
-            padding: 20px;
-            background: rgba(255, 51, 0, 0.05);
-            border-radius: 8px;
-            border: 1px solid #333;
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: #222;
         }
-        .margin-label { font-size: 0.8rem; color: var(--text-secondary); margin-bottom: 5px; }
-        .margin-value { font-size: 1.5rem; font-weight: 700; color: var(--brand); }
 
-        /* --- SECCIÓN DERECHA: OUTPUTS --- */
-        .output-panel {
-            flex: 1;
-            padding: 50px;
-            display: flex;
-            flex-direction: column;
+        /* --- RIGHT PANEL: STRATEGIC DASHBOARD --- */
+        .dashboard {
+            padding: 3rem;
             overflow-y: auto;
+            background: radial-gradient(circle at top right, #150a0a, #080808);
         }
 
-        .hero-section {
-            margin-bottom: 50px;
+        /* Top Summary Cards */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            margin-bottom: 3rem;
         }
 
-        .section-title { font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; margin-bottom: 20px; font-weight: 600; }
-
-        .hero-card {
-            background: var(--bg-panel);
+        .card {
+            background: rgba(255,255,255,0.03);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 30px;
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 30px;
-            border-left: 4px solid var(--brand);
+            padding: 1.5rem;
+            position: relative;
         }
 
-        .stat-box .label { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 10px; }
-        .stat-box .value { font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1.1; }
-        .stat-box .sub { font-size: 0.9rem; color: var(--brand); margin-top: 10px; font-weight: 500; }
-
-        /* Tabla Comparativa Minimalista */
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .card.highlight {
+            background: linear-gradient(180deg, rgba(255, 51, 0, 0.08) 0%, rgba(0,0,0,0) 100%);
+            border-color: rgba(255, 51, 0, 0.3);
         }
 
-        .comparison-table th {
-            text-align: left;
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            padding-bottom: 15px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .comparison-table td {
-            padding: 20px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 1.1rem;
-        }
-
-        .scenario-name { font-weight: 600; font-size: 1rem; }
-        .roas-tag { display: inline-block; padding: 4px 8px; background: #222; border-radius: 4px; font-size: 0.9rem; font-weight: 700; }
-        .profit-val { font-weight: 700; }
-
-        /* Responsive rápido */
-        @media (max-width: 900px) {
-            body { flex-direction: column; height: auto; }
-            .input-panel { width: 100%; border-right: none; border-bottom: 1px solid var(--border); }
-            .hero-card { grid-template-columns: 1fr; }
-        }
-    </style>
-</head>
-<body>
-
-    <div class="input-panel">
-        <div class="brand-header">MANU <span>/ ESTRATEGIA</span></div>
-
-        <div class="form-group">
-            <label>1. Industria / Nicho</label>
-            <select id="niche" onchange="calculate()">
-                <option value="ecom">E-commerce (Retail/Moda)</option>
-                <option value="service">Servicios / B2B / High Ticket</option>
-                <option value="info">Infoproductos / Digital</option>
-                <option value="local">Negocio Local (Leads)</option>
-            </select>
-        </div>
+        .card-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+        .card-value { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; color: #fff; }
+        .card-sub { font-size: 0.85rem; margin-top: 8px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
         
-        <div class="form-group">
-            <label>2. Meta de Facturación Mensual ($)</label>
-            <input type="number" id="revenueTarget" value="10000" placeholder="Ej. 10000" oninput="calculate()">
-        </div>
+        /* Scenario Table */
+        .scenario-container {
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-panel);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
 
-        <div class="form-group">
-            <label>3. Ticket Promedio de Venta ($)</label>
-            <input type="number" id="aov" value="80" placeholder="Ej. 80" oninput="calculate()">
-        </div>
-
-        <div class="form-group">
-            <label>4. Costo del Producto/Servicio (COGS) ($)</label>
-            <input type="number" id="cost" value="30" placeholder="Ej. 30" oninput="calculate()">
-        </div>
-
-        <div class="margin-info">
-            <div class="margin-label">Tu Margen Bruto Actual:</div>
-            <div class="margin-value" id="grossMarginDisplay">0%</div>
-        </div>
-    </div>
-
-    <div class="output-panel">
-        
-        <div class="hero-section">
-            <div class="section-title">Proyección Objetivo (Escenario Realista)</div>
-            <div class="hero-card">
-                <div class="stat-box">
-                    <div class="label">Inversión Ads Sugerida</div>
-                    <div class="value" id="main-spend">$0</div>
-                    <div class="sub">Presupuesto Mensual</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">ROAS Objetivo</div>
-                    <div class="value" id="main-roas">0.0x</div>
-                    <div class="sub">Retorno Saludable</div>
-                </div>
-                <div class="stat-box">
-                    <div class="label">Utilidad Neta Estimada</div>
-                    <div class="value" style="color: var(--brand);" id="main-profit">$0</div>
-                    <div class="sub" id="main-margin">0% Margen Final</div>
-                </div>
-            </div>
-        </div>
-
-        <div>
-            <div class="section-title">Comparativa de Escenarios</div>
-            <table class="comparison-table">
-                <thead>
-                    <tr>
-                        <th width="25%">Escenario</th>
-                        <th width="25%">ROAS Base</th>
-                        <th width="25%">Inversión Necesaria</th>
-                        <th width="25%">Utilidad Neta</th>
-                    </tr>
-                </thead>
-                <tbody id="scenarioTableBody">
-                    </tbody>
-            </table>
-        </div>
-
-    </div>
-
-<script>
-    // Configuración de ROAS realistas por industria
-    // No usamos 2x. Usamos rangos que permiten escalar.
-    const nicheTargets = {
-        ecom: { conservative: 3.5, realistic: 5.0, scalable: 8.0 },
-        service: { conservative: 4.0, realistic: 7.0, scalable: 12.0 },
-        info: { conservative: 3.0, realistic: 5.0, scalable: 9.0 },
-        local: { conservative: 4.0, realistic: 6.5, scalable: 10.0 }
-    };
-
-    function calculate() {
-        const niche = document.getElementById('niche').value;
-        const revenueTarget = parseFloat(document.getElementById('revenueTarget').value) || 0;
-        const aov = parseFloat(document.getElementById('aov').value) || 0;
-        const cost = parseFloat(document.getElementById('cost').value) || 0;
-
-        if(revenueTarget === 0 || aov === 0) return;
-
-        // 1. Calcular Márgenes Base
-        const grossMarginUnit = aov - cost;
-        const grossMarginPerc = (grossMarginUnit / aov);
-        document.getElementById('grossMarginDisplay').innerText = (grossMarginPerc * 100).toFixed(0) + "%";
-        
-        const breakEvenROAS = 1 / grossMarginPerc;
-
-        // 2. Obtener ROAS Targets del Nicho
-        let targets = nicheTargets[niche];
-
-        // AJUSTE DE SEGURIDAD: Si el margen es muy malo, subimos los ROAS mínimos
-        // para asegurar que incluso el escenario conservador no dé pérdidas.
-        let safeConservative = Math.max(targets.conservative, breakEvenROAS * 1.2); // Al menos 20% sobre BE
-        let safeRealistic = Math.max(targets.realistic, safeConservative * 1.4);
-        let safeScalable = Math.max(targets.scalable, safeRealistic * 1.5);
-
-        const scenarios = [
-            { name: "Conservador", roas: safeConservative },
-            { name: "Objetivo (Realista)", roas: safeRealistic, isMain: true },
-            { name: "Escalable (Ideal)", roas: safeScalable }
-        ];
-
-        const tbody = document.getElementById('scenarioTableBody');
-        tbody.innerHTML = ''; // Limpiar tabla
-
-        scenarios.forEach(sc => {
-            // Cálculo Inverso: Cuánto invertir para lograr la meta con ese ROAS
-            const investment = revenueTarget / sc.roas;
-            
-            // Costos Totales
-            const unitsSold = revenueTarget / aov;
-            const totalCOGS = unitsSold * cost;
-            const netProfit = revenueTarget - totalCOGS - investment;
-            const finalMargin = (netProfit / revenueTarget) * 100;
-
-            // Llenar Datos Principales (Hero Section)
-            if(sc.isMain) {
-                document.getElementById('main-spend').innerText = fmtMoney(investment);
-                document.getElementById('main-roas').innerText = sc.roas.toFixed(1) + "x";
-                document.getElementById('main-profit').innerText = fmtMoney(netProfit);
-                document.getElementById('main-margin').innerText = finalMargin.toFixed(1) + "% Margen Final";
-            }
-
-            // Llenar Tabla
-            const row = `
-                <tr>
-                    <td class="scenario-name">${sc.name}</td>
-                    <td><span class="roas-tag" style="${sc.roas < breakEvenROAS + 0.5 ? 'color:#ff4444' : ''}">${sc.roas.toFixed(1)}x</span></td>
-                    <td>${fmtMoney(investment)}</td>
-                    <td class="profit-val" style="color: ${netProfit > 0 ? 'var(--brand)' : '#ff4444'}">${fmtMoney(netProfit)}</td>
-                </tr>
-            `;
-            tbody.innerHTML += row;
-        });
-    }
-
-    function fmtMoney(num) {
-        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
-    }
-
-    // Inicializar
-    calculate();
-</script>
-
-</body>
-</html>
+        .table-header {
