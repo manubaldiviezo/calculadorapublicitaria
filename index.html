@@ -3,33 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANU | Estimador de Inversión & Rentabilidad</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>MANU | Unit Economics Validator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* Identidad MANU */
-            --brand-color: #FF4500; /* Naranja Intenso */
-            --brand-dark: #cc3700;
+            --brand: #FF4400; /* Naranja MANU */
+            --brand-dim: rgba(255, 68, 0, 0.1);
+            --bg-core: #09090b;
+            --bg-card: #121214;
+            --border: #27272a;
+            --text-main: #e4e4e7;
+            --text-muted: #71717a;
             
-            /* Colores de Estado */
-            --safe: #10B981; /* Verde Rentable */
-            --danger: #EF4444; /* Rojo Pérdida */
-            --neutral: #6B7280;
-            
-            /* UI Oscura Profesional */
-            --bg-body: #050505;
-            --bg-card: #111111;
-            --bg-input: #1a1a1a;
-            --border: #262626;
-            --text-main: #FFFFFF;
-            --text-sec: #9CA3AF;
+            /* Logic Colors */
+            --profit: #10b981; /* Verde */
+            --warning: #f59e0b; /* Amarillo */
+            --critical: #ef4444; /* Rojo */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--bg-body);
+            background-color: var(--bg-core);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
@@ -38,410 +34,372 @@
 
         /* --- HEADER --- */
         header {
-            padding: 1.5rem 5%;
+            padding: 1.5rem 3rem;
             border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(5, 5, 5, 0.9);
-            backdrop-filter: blur(10px);
-            position: sticky; top: 0; z-index: 100;
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(9, 9, 11, 0.95);
         }
 
-        .brand-logo { font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
-        .brand-logo span { color: var(--brand-color); }
-        .brand-tagline { font-size: 0.8rem; color: var(--text-sec); font-weight: 500; margin-left: 10px; border-left: 1px solid #333; padding-left: 10px; }
+        .brand-logo { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        .brand-logo span { color: var(--brand); }
+        .methodology-tag { font-size: 0.75rem; background: #222; padding: 4px 10px; border-radius: 4px; color: #aaa; margin-left: 15px; vertical-align: middle; font-family: 'Inter'; }
 
-        /* --- LAYOUT GRID --- */
-        .container {
+        /* --- LAYOUT --- */
+        .calculator-grid {
             display: grid;
-            grid-template-columns: 380px 1fr; /* Panel Inputs Fijo | Resultados Flexible */
+            grid-template-columns: 400px 1fr;
             flex: 1;
-            max-width: 1600px;
-            margin: 0 auto;
-            width: 100%;
+            height: calc(100vh - 85px);
         }
 
-        /* --- LEFT PANEL: DATOS DE NEGOCIO --- */
-        .input-panel {
+        /* --- LEFT: BUSINESS DATA --- */
+        .inputs-panel {
             background: var(--bg-card);
             border-right: 1px solid var(--border);
             padding: 2.5rem;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
+            display: flex; flex-direction: column; gap: 2rem;
             overflow-y: auto;
-            height: calc(100vh - 73px);
         }
 
-        .input-group { display: flex; flex-direction: column; gap: 0.8rem; position: relative; }
-
-        label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-sec);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .section-title {
+            font-size: 0.85rem; color: var(--brand); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        select, input {
-            background: var(--bg-input);
+        .input-wrapper { margin-bottom: 1.5rem; }
+        
+        label { display: block; font-size: 0.85rem; font-weight: 500; color: #ccc; margin-bottom: 8px; }
+        
+        input, select {
+            width: 100%;
+            background: #000;
             border: 1px solid var(--border);
             color: #fff;
             padding: 14px;
             border-radius: 8px;
             font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            transition: 0.2s;
-            width: 100%;
+            transition: all 0.2s;
         }
+        input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-dim); }
 
-        select:focus, input:focus { border-color: var(--brand-color); }
+        .helper-text { font-size: 0.75rem; color: #555; margin-top: 6px; }
 
-        .helper-text { font-size: 0.75rem; color: #555; line-height: 1.4; margin-top: -5px; }
-
-        /* --- RIGHT PANEL: ANÁLISIS --- */
-        .result-panel {
+        /* --- RIGHT: ANALYSIS --- */
+        .analysis-panel {
             padding: 3rem;
-            display: flex;
-            flex-direction: column;
-            gap: 3rem;
+            background: radial-gradient(circle at top right, #1a0a0a, #09090b);
             overflow-y: auto;
-            height: calc(100vh - 73px);
+            display: flex; flex-direction: column; gap: 2rem;
         }
 
-        /* Hero Cards */
-        .kpi-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
+        /* Top Cards */
+        .stats-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
         }
 
-        .kpi-card {
-            background: var(--bg-card);
+        .stat-box {
+            background: rgba(255,255,255,0.02);
             border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 2rem;
+            padding: 1.5rem;
             position: relative;
-            transition: transform 0.2s;
         }
-        .kpi-card:hover { transform: translateY(-3px); border-color: #333; }
-        
-        .kpi-card.main { border-bottom: 3px solid var(--brand-color); background: linear-gradient(180deg, rgba(255, 69, 0, 0.05) 0%, rgba(17,17,17,1) 100%); }
+        .stat-box.highlight { background: linear-gradient(180deg, rgba(255, 68, 0, 0.05), transparent); border-color: rgba(255, 68, 0, 0.3); }
 
-        .kpi-label { font-size: 0.8rem; color: var(--text-sec); font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }
-        .kpi-value { font-size: 2.5rem; font-weight: 700; color: #fff; letter-spacing: -1px; }
-        .kpi-sub { font-size: 0.85rem; margin-top: 8px; color: var(--text-sec); }
+        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
+        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
+        .stat-sub { font-size: 0.85rem; margin-top: 8px; opacity: 0.8; }
 
-        /* Visualizador de Viabilidad */
-        .viability-section {
+        /* The ROAS Scale Visualizer */
+        .scale-container {
             background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 2rem;
+            border-radius: 16px;
+            padding: 2.5rem;
+            margin-top: 1rem;
         }
 
-        .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 700; text-transform: uppercase; }
+        .scale-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 3rem; display: flex; justify-content: space-between; }
 
-        /* Barras de Progreso ROAS */
-        .roas-meter-container { margin-top: 1rem; position: relative; padding-top: 20px; }
+        .visual-track-wrapper { position: relative; height: 60px; margin-top: 20px; }
         
-        .roas-track {
-            height: 12px;
-            background: #222;
-            border-radius: 6px;
-            width: 100%;
-            position: relative;
+        .track-bg {
+            width: 100%; height: 12px; background: #222; border-radius: 6px; position: absolute; top: 20px;
         }
 
+        /* Zonas de color en el track */
+        .zone-loss { position: absolute; height: 100%; background: var(--critical); border-radius: 6px 0 0 6px; opacity: 0.3; }
+        .zone-profit { position: absolute; height: 100%; background: var(--profit); border-radius: 0 6px 6px 0; opacity: 0.3; }
+
+        /* Marcadores */
         .marker {
-            position: absolute;
-            top: -25px;
-            transform: translateX(-50%);
-            font-size: 0.75rem;
-            font-weight: 700;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: left 0.5s ease;
+            position: absolute; top: 0; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center;
+            transition: left 0.5s ease-out;
         }
-        .marker::after { content: ''; width: 2px; height: 35px; background: currentColor; margin-top: 2px; }
+        .marker-line { width: 2px; height: 50px; background: #fff; }
+        .marker-label { font-size: 0.7rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; white-space: nowrap; }
+        .marker-val { font-size: 0.9rem; font-weight: 700; margin-top: 5px; background: #000; padding: 2px 6px; border-radius: 4px; border: 1px solid #333; }
 
-        .marker-be { color: var(--danger); z-index: 2; } /* Break Even */
-        .marker-target { color: var(--brand-color); z-index: 3; } /* Objetivo */
-        .marker-market { color: var(--neutral); z-index: 1; opacity: 0.5; } /* Promedio Mercado */
+        .m-be .marker-line { background: var(--critical); }
+        .m-be .marker-label { color: var(--critical); }
+        
+        .m-target .marker-line { background: var(--profit); height: 60px; top: -10px; width: 3px; }
+        .m-target .marker-label { color: var(--profit); font-size: 0.8rem; }
+        
+        .m-market .marker-line { background: var(--text-muted); border-style: dashed; }
+        .m-market .marker-label { color: var(--text-muted); }
 
-        /* Análisis de Experto */
-        .expert-box {
+        /* Advice Box */
+        .advice-panel {
             margin-top: 2rem;
             padding: 1.5rem;
-            border-left: 4px solid var(--brand-color);
-            background: rgba(255, 69, 0, 0.03);
+            border-left: 4px solid #333;
+            background: rgba(255,255,255,0.02);
             border-radius: 0 8px 8px 0;
         }
-        .expert-title { color: var(--brand-color); font-weight: 700; margin-bottom: 0.5rem; font-size: 0.9rem; text-transform: uppercase; }
-        .expert-text { font-size: 0.95rem; line-height: 1.6; color: #ddd; }
 
-        /* Responsive */
-        @media (max-width: 1100px) {
-            .container { grid-template-columns: 1fr; }
-            .input-panel, .result-panel { height: auto; border-right: none; }
-            .kpi-container { grid-template-columns: 1fr; }
+        @media (max-width: 1000px) {
+            .calculator-grid { grid-template-columns: 1fr; }
+            .stats-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand-logo">MANU <span>/ CALCULATOR</span> <span class="brand-tagline">Estimador de Inversión y Ganancia</span></div>
+    <div class="brand-logo">MANU <span>/ PROFIT ARCHITECT</span></div>
+    <span class="methodology-tag">Metodología: Unit Economics</span>
 </header>
 
-<div class="container">
+<div class="calculator-grid">
     
-    <div class="input-panel">
+    <div class="inputs-panel">
         
-        <div class="input-group">
-            <label>1. Rubro / Nicho de Mercado</label>
+        <div class="section-title">1. Configuración de Nicho</div>
+        <div class="input-wrapper">
+            <label>Selecciona tu Industria</label>
             <select id="niche" onchange="calculate()">
-                <optgroup label="E-commerce (Venta Productos)">
-                    <option value="fashion">Moda, Ropa y Accesorios</option>
-                    <option value="jewelry">Joyería y Lujo</option>
-                    <option value="beauty">Belleza, Cosmética y Skincare</option>
-                    <option value="tech">Tecnología y Gadgets</option>
-                    <option value="home">Hogar y Decoración</option>
-                    <option value="pets">Mascotas</option>
-                    <option value="kids">Bebés y Juguetes</option>
-                </optgroup>
-                <optgroup label="Servicios & Profesionales">
-                    <option value="health_service">Salud (Dentistas, Clínicas)</option>
-                    <option value="lawyer">Abogados y Contadores</option>
-                    <option value="real_estate">Bienes Raíces / Inmobiliaria</option>
-                    <option value="gym">Gimnasios y Fitness</option>
-                    <option value="construction">Remodelación y Construcción</option>
-                </optgroup>
-                <optgroup label="Educación & Digital">
-                    <option value="course_low">Cursos Online (Low Ticket)</option>
-                    <option value="course_high">Mentoria / High Ticket</option>
-                    <option value="software">SaaS / Software</option>
-                </optgroup>
+                <option value="fashion" data-roas="4.5">Moda & Ropa (ROAS Est. 4.5x)</option>
+                <option value="beauty" data-roas="3.5">Belleza & Cosmética (ROAS Est. 3.5x)</option>
+                <option value="tech" data-roas="3.0">Tecnología / Gadgets (ROAS Est. 3.0x)</option>
+                <option value="service" data-roas="6.0">Servicios / B2B (ROAS Est. 6.0x)</option>
+                <option value="info" data-roas="3.5">Infoproductos (ROAS Est. 3.5x)</option>
+                <option value="realestate" data-roas="15.0">Inmobiliaria (ROAS Est. 15x)</option>
             </select>
-            <div class="helper-text">Usamos datos históricos de este rubro para calcular los costos publicitarios promedio.</div>
+            <div class="helper-text">Usamos el rendimiento promedio real de agencias en este sector como referencia.</div>
         </div>
 
-        <div class="input-group">
-            <label>2. Meta de Facturación Mensual ($)</label>
-            <input type="number" id="revenue" value="5000" placeholder="Ej. 5000" oninput="calculate()">
+        <div class="section-title">2. Finanzas del Producto</div>
+        <div class="input-wrapper">
+            <label>Meta de Facturación ($)</label>
+            <input type="number" id="revenueGoal" value="10000" oninput="calculate()">
         </div>
 
-        <div class="input-group">
-            <label>3. Precio Promedio al Público (Ticket) ($)</label>
-            <input type="number" id="price" value="50" placeholder="Ej. 50" oninput="calculate()">
+        <div class="input-wrapper">
+            <label>Precio de Venta (AOV) ($)</label>
+            <input type="number" id="price" value="60" oninput="calculate()">
         </div>
 
-        <div class="input-group">
-            <label>4. Costo del Producto/Servicio ($)</label>
-            <input type="number" id="cost" value="20" placeholder="Ej. 20" oninput="calculate()">
-            <div class="helper-text">Lo que te cuesta producirlo, comprarlo o entregarlo (sin contar publicidad).</div>
+        <div class="input-wrapper">
+            <label>Costo Total Producto (COGS + Envío + Tax) ($)</label>
+            <input type="number" id="cost" value="25" oninput="calculate()">
+            <div class="helper-text">Incluye costo de fábrica, empaquetado, impuestos y comisión de pasarela.</div>
         </div>
 
     </div>
 
-    <div class="result-panel">
+    <div class="analysis-panel">
         
-        <div class="kpi-container">
-            <div class="kpi-card main">
-                <div class="kpi-label">Inversión Sugerida</div>
-                <div class="kpi-value" id="res-invest">$0</div>
-                <div class="kpi-sub">Presupuesto en Ads</div>
+        <div class="stats-row">
+            <div class="stat-box highlight">
+                <div class="stat-label">Inversión Necesaria (Est.)</div>
+                <div class="stat-val" id="res-invest">$0</div>
+                <div class="stat-sub">Basado en el ROAS de Mercado</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Utilidad Estimada</div>
-                <div class="kpi-value" id="res-profit" style="color: var(--safe);">$0</div>
-                <div class="kpi-sub" id="res-margin">0% Margen Final</div>
+            <div class="stat-box">
+                <div class="stat-label">CPA Objetivo (Máximo)</div>
+                <div class="stat-val" style="color: var(--brand);" id="res-target-cpa">$0</div>
+                <div class="stat-sub">Lo máximo que puedes pagar por venta</div>
             </div>
-            <div class="kpi-card">
-                <div class="kpi-label">Punto de Equilibrio (Break-Even)</div>
-                <div class="kpi-value" id="res-be" style="color: var(--danger);">0.0x</div>
-                <div class="kpi-sub">ROAS Mínimo para no perder</div>
+            <div class="stat-box">
+                <div class="stat-label">Utilidad Neta Proyectada</div>
+                <div class="stat-val" style="color: var(--profit);" id="res-profit">$0</div>
+                <div class="stat-sub" id="res-margin">0% Margen Neto</div>
             </div>
         </div>
 
-        <div class="viability-section">
-            <div class="section-title">
-                <span>Análisis de Viabilidad de Mercado</span>
-                <span id="badge-status" class="status-badge" style="background:#333; color:#aaa">CALCULANDO...</span>
+        <div class="scale-container">
+            <div class="scale-title">
+                <span>Análisis de Viabilidad & ROAS</span>
+                <span id="viability-badge" style="font-size:0.8rem; background:#333; padding:5px 10px; border-radius:4px;">CALCULANDO</span>
             </div>
             
-            <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 3rem;">
-                Comparativa: Tu Punto de Equilibrio vs. Lo que el Mercado suele dar en el nicho <strong><span id="niche-name">...</span></strong>.
+            <p style="color:#888; font-size:0.9rem; margin-bottom: 2rem;">
+                Comparamos tu <strong>Punto de Equilibrio (Break-Even)</strong> contra la <strong>Realidad del Mercado</strong>.
             </p>
 
-            <div class="roas-meter-container">
-                <div class="roas-track"></div>
-                
-                <div id="mark-be" class="marker marker-be" style="left: 0%;">
-                    <span>TU EQUILIBRIO</span>
-                    <strong id="val-be">0.0x</strong>
+            <div class="visual-track-wrapper">
+                <div class="track-bg"></div>
+                <div class="zone-loss" id="zone-loss" style="width: 30%;"></div>
+                <div class="zone-profit" id="zone-profit" style="left: 30%; width: 70%;"></div>
+
+                <div class="marker m-be" id="mark-be">
+                    <span class="marker-label">Break Even</span>
+                    <span class="marker-line"></span>
+                    <span class="marker-val" id="val-be">0.0x</span>
                 </div>
 
-                <div id="mark-avg" class="marker marker-market" style="left: 0%;">
-                    <span>PROMEDIO RUBRO</span>
-                    <strong id="val-avg">0.0x</strong>
-                </div>
-
-                <div id="mark-target" class="marker marker-target" style="left: 0%;">
-                    <span>OBJETIVO</span>
-                    <strong id="val-target">0.0x</strong>
+                <div class="marker m-market" id="mark-market">
+                    <span class="marker-label">Mercado</span>
+                    <span class="marker-line"></span>
+                    <span class="marker-val" id="val-market">0.0x</span>
                 </div>
             </div>
-
-            <div class="expert-box">
-                <div class="expert-title">💡 Diagnóstico de MANU</div>
-                <div class="expert-text" id="expert-msg">
-                    Ingresa tus datos para recibir el diagnóstico.
-                </div>
+            
+            <div style="display:flex; justify-content:space-between; margin-top:60px; font-size:0.75rem; color:#666;">
+                <div>ZONA DE PÉRDIDA</div>
+                <div>ZONA DE GANANCIA</div>
             </div>
+        </div>
+
+        <div class="advice-panel" id="advice-box" style="border-color: #333;">
+            <div style="color: #fff; font-weight: 700; margin-bottom: 10px; font-size:1.1rem;">Diagnóstico Estratégico</div>
+            <p style="color: #aaa; line-height: 1.6; font-size: 0.95rem;" id="advice-text">
+                Ingresa tus datos para ver el análisis.
+            </p>
         </div>
 
     </div>
 </div>
 
 <script>
-    // --- CEREBRO DE LA APLICACIÓN (DATABASE DE NICHOS) ---
-    // ROAS Avg: Lo que una campaña normalita suele dar.
-    // ROAS High: Lo que una campaña bien optimizada da.
-    const nicheData = {
-        // E-COMMERCE
-        fashion: { label: "Moda", roasAvg: 4.0, roasHigh: 7.0 },
-        jewelry: { label: "Joyería", roasAvg: 5.0, roasHigh: 9.0 },
-        beauty:  { label: "Belleza", roasAvg: 3.5, roasHigh: 6.0 },
-        tech:    { label: "Tecnología", roasAvg: 3.0, roasHigh: 5.0 },
-        home:    { label: "Hogar", roasAvg: 3.8, roasHigh: 6.5 },
-        pets:    { label: "Mascotas", roasAvg: 4.5, roasHigh: 7.5 },
-        kids:    { label: "Niños/Juguetes", roasAvg: 4.0, roasHigh: 6.5 },
-        
-        // SERVICIOS
-        health_service: { label: "Salud/Dental", roasAvg: 5.0, roasHigh: 10.0 }, // Alto retorno por LTV
-        lawyer:         { label: "Legal", roasAvg: 6.0, roasHigh: 12.0 },
-        real_estate:    { label: "Inmobiliaria", roasAvg: 15.0, roasHigh: 40.0 }, // ROI sobre comisión, no venta total
-        gym:            { label: "Fitness", roasAvg: 4.0, roasHigh: 8.0 },
-        construction:   { label: "Construcción", roasAvg: 8.0, roasHigh: 15.0 },
-        
-        // DIGITAL
-        course_low:  { label: "Cursos Low Ticket", roasAvg: 2.5, roasHigh: 4.5 },
-        course_high: { label: "Mentoria High Ticket", roasAvg: 4.0, roasHigh: 8.0 },
-        software:    { label: "Software/SaaS", roasAvg: 3.0, roasHigh: 6.0 }
-    };
-
     function calculate() {
-        // 1. OBTENER DATOS SIMPLES
-        const nicheKey = document.getElementById('niche').value;
-        const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+        // 1. Obtener Datos
+        const revenueGoal = parseFloat(document.getElementById('revenueGoal').value) || 0;
         const price = parseFloat(document.getElementById('price').value) || 0;
         const cost = parseFloat(document.getElementById('cost').value) || 0;
-
-        if (revenue === 0 || price === 0) return;
-
-        const data = nicheData[nicheKey];
-        document.getElementById('niche-name').innerText = data.label;
-
-        // 2. CÁLCULOS INTERNOS (LO QUE EL USUARIO NO SABE HACER)
         
-        // Margen Bruto ($) y (%)
-        const marginDollar = price - cost;
-        const marginPerc = marginDollar / price;
-        
-        // Break Even ROAS = Precio Venta / Margen Bruto
-        // Ejemplo: Vendo a 100, gano 50. Necesito 100/50 = 2x ROAS para no perder.
-        let breakEvenROAS = price / marginDollar;
-        if(marginDollar <= 0) breakEvenROAS = 100; // Evitar error infinito
+        // Obtener ROAS de Mercado del Select (Data Attributes)
+        const nicheSelect = document.getElementById('niche');
+        const marketROAS = parseFloat(nicheSelect.options[nicheSelect.selectedIndex].dataset.roas);
 
-        // ROAS Objetivo (Usamos el promedio del mercado como base, pero ajustamos si es necesario)
-        let targetROAS = data.roasAvg;
+        if(revenueGoal === 0 || price === 0) return;
+
+        // 2. Cálculo de Unit Economics (Matemática Pura)
+        const grossMargin = price - cost;
+        const grossMarginPerc = (grossMargin / price);
         
-        // Safety Check: Si el promedio de mercado es menor al Break Even, usamos el High Performance
-        // Si aun así no da, alertamos.
-        if (targetROAS <= breakEvenROAS) {
-            targetROAS = data.roasHigh; 
+        // Break Even ROAS: El punto exacto donde Ingresos = Costos
+        // Fórmula: 1 / Margen Bruto %
+        let breakEvenROAS = 1 / grossMarginPerc;
+        
+        // Target CPA (Cost Per Acquisition): Lo máximo que podemos pagar para quedar tablas
+        // (Aunque lo ideal es pagar menos para tener ganancia)
+        const maxCPA = grossMargin; // Si pagas esto, sales tablas (profit 0)
+        
+        // CPA Realista (basado en Mercado)
+        // Si el mercado da un ROAS de X, el CPA será Precio / ROAS
+        const realisticCPA = price / marketROAS;
+
+        // 3. Proyección Financiera usando Datos de Mercado
+        const investmentNeeded = revenueGoal / marketROAS;
+        const totalSales = Math.ceil(revenueGoal / price);
+        const totalCOGS = totalSales * cost;
+        const projectedProfit = revenueGoal - totalCOGS - investmentNeeded;
+        const projectedMargin = (projectedProfit / revenueGoal) * 100;
+
+        // 4. Renderizar Textos
+        document.getElementById('res-invest').innerText = fmtMoney(investmentNeeded);
+        document.getElementById('res-target-cpa').innerText = fmtMoney(maxCPA); // Mostramos el CPA Máximo Permisible
+        document.getElementById('res-profit').innerText = fmtMoney(projectedProfit);
+        document.getElementById('res-margin').innerText = projectedMargin.toFixed(1) + "% Margen Neto";
+
+        // Color Profit
+        if(projectedProfit < 0) {
+            document.getElementById('res-profit').style.color = "var(--critical)";
+        } else {
+            document.getElementById('res-profit').style.color = "var(--profit)";
         }
 
-        // Inversión Necesaria = Meta / ROAS Objetivo
-        const investment = revenue / targetROAS;
+        // 5. Renderizar Gráfico (La Escala)
+        // Definimos el rango del gráfico. Máximo será el mayor entre BE y Mercado * 1.5
+        const maxScale = Math.max(breakEvenROAS, marketROAS) * 1.5;
         
-        // Utilidad = Revenue - (Costo Productos Total) - Inversión
-        const totalUnits = revenue / price;
-        const totalCostProd = totalUnits * cost;
-        const profit = revenue - totalCostProd - investment;
-        const profitMargin = (profit / revenue) * 100;
-
-        // 3. RENDERIZADO DE RESULTADOS
-        document.getElementById('res-invest').innerText = fmtMoney(investment);
-        document.getElementById('res-profit').innerText = fmtMoney(profit);
-        document.getElementById('res-margin').innerText = profitMargin.toFixed(1) + "% Margen Final";
-        document.getElementById('res-be').innerText = breakEvenROAS.toFixed(2) + "x";
-
-        // 4. LÓGICA DE VISUALIZACIÓN GRÁFICA (SLIDER)
-        // Definimos una escala visual de 0 a MaxROAS (aprox 1.5 veces el high)
-        const scaleMax = Math.max(breakEvenROAS, data.roasHigh) * 1.5;
-        
-        // Posiciones en %
-        const posBE = Math.min((breakEvenROAS / scaleMax) * 100, 95);
-        const posAvg = Math.min((data.roasAvg / scaleMax) * 100, 95);
-        const posTarget = Math.min((targetROAS / scaleMax) * 100, 95);
+        // Posiciones Porcentuales (0 a 100%)
+        const posBE = (breakEvenROAS / maxScale) * 100;
+        const posMarket = (marketROAS / maxScale) * 100;
 
         // Mover Marcadores
-        updateMarker('mark-be', posBE, breakEvenROAS);
-        updateMarker('mark-avg', posAvg, data.roasAvg);
-        updateMarker('mark-target', posTarget, targetROAS);
+        moveMarker('mark-be', posBE, breakEvenROAS);
+        moveMarker('mark-market', posMarket, marketROAS);
 
-        // 5. DIAGNÓSTICO DEL EXPERTO (MANU)
-        const badge = document.getElementById('badge-status');
-        const msgBox = document.getElementById('expert-msg');
-        const profitEl = document.getElementById('res-profit');
+        // Ajustar Zonas de Color
+        document.getElementById('zone-loss').style.width = posBE + "%";
+        document.getElementById('zone-profit').style.left = posBE + "%";
+        document.getElementById('zone-profit').style.width = (100 - posBE) + "%";
 
-        // Escenario 1: Margen Negativo o Nulo (Producto mal costeado)
-        if (marginDollar <= 0) {
-            badge.innerText = "NO VIABLE";
-            badge.style.background = "var(--danger)"; badge.style.color = "#fff";
-            profitEl.style.color = "var(--danger)";
-            msgBox.innerHTML = `⚠️ <strong>Error Crítico de Negocio:</strong> Tu costo de producto es igual o mayor al precio de venta. Ninguna campaña publicitaria puede arreglar esto. Necesitas subir precios o bajar costos de producción antes de invertir un centavo.`;
-        } 
-        // Escenario 2: El Mercado no soporta tu Break Even (Tu margen es muy bajo para el estándar del nicho)
-        else if (breakEvenROAS > data.roasAvg) {
-            badge.innerText = "RIESGO ALTO";
-            badge.style.background = "var(--danger)"; badge.style.color = "#fff";
-            profitEl.style.color = "var(--danger)";
-            msgBox.innerHTML = `🛑 <strong>Alerta de Margen:</strong> Tu "Punto de Equilibrio" es ${breakEvenROAS.toFixed(2)}x, pero el promedio en ${data.label} es solo ${data.roasAvg.toFixed(2)}x. <br><br>Esto significa que necesitarás campañas extraordinarias (top 10%) solo para empatar. Te sugiero aumentar tu Ticket Promedio (AOV) o mejorar tu margen antes de invertir fuerte.`;
-        }
-        // Escenario 3: Margen Apretado pero Posible
-        else if (profitMargin < 15) {
-            badge.innerText = "MARGEN AJUSTADO";
-            badge.style.background = "#FFC107"; badge.style.color = "#000";
-            profitEl.style.color = "#FFC107";
-            msgBox.innerHTML = `⚠️ <strong>Precaución:</strong> Es viable, pero te quedará poco margen limpio (${profitMargin.toFixed(1)}%). Estás invirtiendo $1 para ganar unos centavos. <br><br>Sugerencia: Enfócate en la recompra (LTV) para que la ganancia real venga de la segunda venta, ya que la primera apenas cubre costos.`;
-        }
-        // Escenario 4: Escenario Ideal
-        else {
-            badge.innerText = "EXCELENTE OPORTUNIDAD";
-            badge.style.background = "var(--safe)"; badge.style.color = "#fff";
-            profitEl.style.color = "var(--safe)";
-            msgBox.innerHTML = `🚀 <strong>Luz Verde:</strong> Tienes un margen saludable. Tu Punto de Equilibrio (${breakEvenROAS.toFixed(2)}x) es fácil de superar con el rendimiento estándar del rubro (${data.roasAvg}x). <br><br>Con una inversión de <strong>${fmtMoney(investment)}</strong>, proyectas una ganancia limpia de <strong>${fmtMoney(profit)}</strong>. Es momento de escalar.`;
-        }
+        // 6. Generar Diagnóstico (Lógica de Experto)
+        generateAdvice(breakEvenROAS, marketROAS, projectedMargin, maxCPA, realisticCPA);
     }
 
-    function updateMarker(id, pos, val) {
+    function moveMarker(id, percent, val) {
         const el = document.getElementById(id);
-        el.style.left = pos + "%";
-        // Encontrar el elemento strong dentro y actualizar texto
-        el.querySelector('strong').innerText = val.toFixed(2) + "x";
+        // Limitar para que no se salga
+        if(percent > 95) percent = 95;
+        if(percent < 0) percent = 0;
+        
+        el.style.left = percent + "%";
+        document.getElementById(id.replace('mark', 'val')).innerText = val.toFixed(2) + "x";
+    }
+
+    function generateAdvice(be, market, margin, maxCPA, realCPA) {
+        const badge = document.getElementById('viability-badge');
+        const box = document.getElementById('advice-box');
+        const text = document.getElementById('advice-text');
+        
+        let status = "";
+        let color = "";
+        let message = "";
+
+        // Caso 1: Break Even es mayor que el Mercado (IMPOSIBLE SER RENTABLE)
+        if (be > market) {
+            status = "NO VIABLE";
+            color = "var(--critical)";
+            message = `🛑 <strong>ALTO RIESGO:</strong> Tu negocio necesita un ROAS de ${be.toFixed(2)}x para no perder dinero, pero el mercado en este nicho suele dar ${market.toFixed(2)}x. <br><br>
+            Esto significa que <strong>el costo de publicidad es más alto que tu margen</strong>. <br>
+            Tu CPA Máximo es ${fmtMoney(maxCPA)}, pero conseguir un cliente costará aprox ${fmtMoney(realCPA)}. <br>
+            <strong>Solución:</strong> Debes subir precios, bajar costos de producto o aumentar el LTV antes de invertir.`;
+        } 
+        // Caso 2: Rentable pero arriesgado (Margen bajo)
+        else if (margin < 15) {
+            status = "MARGEN AJUSTADO";
+            color = "var(--warning)";
+            message = `⚠️ <strong>PRECAUCIÓN:</strong> Eres rentable, pero con poco margen de error (${margin.toFixed(1)}%). <br><br>
+            Tu Break Even (${be.toFixed(2)}x) está muy cerca del promedio del mercado. Si los costos de publicidad suben un poco (ej. en Navidad), podrías perder dinero. <br>
+            <strong>Estrategia:</strong> Enfócate en vender Packs o Bundles para aumentar el Ticket Promedio y alejarte del Break Even.`;
+        }
+        // Caso 3: Rentable y Saludable
+        else {
+            status = "EXCELENTE";
+            color = "var(--profit)";
+            message = `🚀 <strong>LUZ VERDE:</strong> Tienes una estructura financiera sólida. <br><br>
+            Tu Break Even es bajo (${be.toFixed(2)}x) comparado con el potencial del mercado (${market.toFixed(2)}x). Esto te deja un margen de seguridad amplio. <br>
+            Puedes permitirte pagar hasta ${fmtMoney(maxCPA)} por cliente, pero probablemente los conseguirás por ${fmtMoney(realCPA)}. ¡Es momento de escalar!`;
+        }
+
+        badge.innerText = status;
+        badge.style.background = color;
+        badge.style.color = "#000"; // Contrast text
+        box.style.borderColor = color;
+        text.innerHTML = message;
     }
 
     function fmtMoney(num) {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
     }
 
-    // Iniciar
+    // Init
     calculate();
 </script>
 
