@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Oficial | Manu Meta Ads</title>
+<style>
+  /* BRANDING MANU: DARK FIRE */
+  :root {
+    --primary: #FF4500; /* Naranja Fuego */
+    --bg: #000000;      /* Negro Puro */
+    --panel: #111111;   /* Gris Muy Oscuro */
+    --border: #333333;
+    --text: #ffffff;
+    --sub: #888888;
+    --green: #00E676;
+    --red: #FF1744;
+  }
+  
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    font-size: 16px;
+  }
+
+  .container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--border);
+    padding-bottom: 20px;
+  }
+  h1 {
+    margin: 0;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 2px;
+  }
+  h1 span { color: var(--primary); }
+  p { color: var(--sub); font-size: 14px; margin-top: 5px; }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 15px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    color: var(--sub);
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .tab-btn.active {
+    background: var(--primary);
+    color: #000;
+    border-color: var(--primary);
+  }
+
+  /* INPUT CARDS */
+  .card {
+    background: var(--panel);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    margin-bottom: 20px;
+  }
+  .card-title {
+    color: var(--primary);
+    font-size: 12px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-bottom: 15px;
+    border-left: 3px solid var(--primary);
+    padding-left: 10px;
+  }
+  
+  label {
+    display: block;
+    font-size: 12px;
+    color: var(--sub);
+    margin-bottom: 5px;
+  }
+  
+  input, select {
+    width: 100%;
+    padding: 12px;
+    background: #000;
+    border: 1px solid var(--border);
+    color: #fff;
+    border-radius: 6px;
+    box-sizing: border-box;
+    font-size: 16px;
+    margin-bottom: 15px;
+  }
+  input:focus { border-color: var(--primary); outline: none; }
+
+  /* BOTON */
+  .btn-calc {
+    width: 100%;
+    padding: 18px;
+    background: var(--primary);
+    color: #000;
+    font-weight: 900;
+    font-size: 18px;
+    text-transform: uppercase;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-bottom: 30px;
+  }
+  .btn-calc:hover { opacity: 0.9; }
+
+  /* RESULTADOS */
+  .results { display: none; }
+  
+  .kpi-box {
+    text-align: center;
+    background: #0a0a0a;
+    border: 1px solid var(--primary);
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+  .kpi-val { font-size: 36px; font-weight: 900; color: #fff; margin: 5px 0; }
+  .kpi-label { color: var(--primary); font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .kpi-sub { font-size: 12px; color: #666; }
+
+  .mini-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .mini-box { background: var(--panel); padding: 15px; border-radius: 8px; text-align: center; border: 1px solid var(--border); }
+  .mini-val { font-size: 20px; font-weight: bold; }
+  .mini-lbl { font-size: 10px; color: var(--sub); text-transform: uppercase; }
+
+  /* TABLA */
+  table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--panel); border-radius: 8px; overflow: hidden; }
+  th { background: #222; color: var(--sub); padding: 10px; text-align: left; }
+  td { padding: 10px; border-bottom: 1px solid #333; }
+  .good { color: var(--green); }
+  .bad { color: var(--red); }
+
+  .hidden { display: none; }
+  footer { text-align: center; font-size: 12px; color: #444; margin-top: 50px; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Manu <span>| Meta Ads</span></h1>
+    <p>CALCULADORA DE RENTABILIDAD & ESCALA</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab('leads')">💬 Servicios (Leads)</button>
+    <button class="tab-btn" onclick="showTab('ecom')">🛒 E-Commerce</button>
+  </div>
+
+  <div id="leads">
+    <div class="card">
+      <div class="card-title">1. Configuración de Nicho</div>
+      <label>Selecciona tu Industria (Carga datos automáticos)</label>
+      <select id="ln_niche" onchange="autoFillLeads()">
+        <option value="">-- Seleccionar Manualmente --</option>
+        <option value="re">Inmobiliaria (Cierre Lento / CPL Alto)</option>
+        <option value="hl">Salud y Estética (Cierre Medio)</option>
+        <option value="b2">Servicios B2B / Agencias</option>
+        <option value="ed">Cursos / Infoproductos</option>
+      </select>
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Datos Financieros</div>
+      <label>Valor por Cliente (LTV) $</label>
+      <input type="number" id="ln_ticket" placeholder="Ej: 100000">
+      
+      <label>Margen Real de Ganancia $</label>
+      <input type="number" id="ln_margin" placeholder="Ej: 40000">
+      
+      <label>Gastos Fijos Operativos Mensuales $</label>
+      <input type="number" id="ln_fixed" placeholder="Ej: 300000 (Sueldos, luz, etc)">
+    </div>
+
+    <div class="card">
+      <div class="card-title">3. Metas</div>
+      <label>Tasa de Cierre de Ventas %</label>
+      <input type="number" id="ln_rate" placeholder="Ej: 10">
+      
+      <label>Meta de Facturación Mensual $</label>
+      <input type="number" id="ln_goal" placeholder="Ej: 5000000">
+      
+      <label>Costo por Lead Actual $ (Opcional)</label>
+      <input type="number" id="ln_cpl" placeholder="Deja vacío si eres nuevo">
+    </div>
+
+    <button class="btn-calc" onclick="calcLeads()">Calcular Estrategia 🔥</button>
+
+    <div id="res_leads" class="results">
+      <div class="kpi-box">
+        <div class="kpi-label">Inversión Sugerida</div>
+        <div class="kpi-val" id="out_ln_inv">$0</div>
+        <div class="kpi-sub">Para facturar <span id="out_ln_goal" style="color:#fff"></span></div>
+      </div>
+
+      <div class="mini-kpis">
+        <div class="mini-box">
+          <div class="mini-lbl">CPL Máximo</div>
+          <div class="mini-val" id="out_ln_max" style="color:var(--red)">$0</div>
+        </div>
+        <div class="mini-box">
+          <div class="mini-lbl">Chats Necesarios</div>
+          <div class="mini-val" id="out_ln_vol">0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Proyección de Escenarios</div>
+        <table id="tab_ln">
+          <thead><tr><th>Caso</th><th>Inv.</th><th>Neto Final</th><th>Estado</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <p style="text-align:center; font-size:10px; color:#555; margin-top:5px">*Neto = Ganancia Bruta - Ads - Fijos</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="ecom" class="hidden">
+    <div class="card">
+      <div class="card-title">1. Unit Economics</div>
+      <label>Precio de Venta $</label>
+      <input type="number" id="ec_price" placeholder="Ej: 50000">
+      
+      <label>Costo Total (Producto + Envío + Fees) $</label>
+      <input type="number" id="ec_cost" placeholder="Ej: 25000">
+      
+      <label>Gastos Fijos Operativos $</label>
+      <input type="number" id="ec_fixed" placeholder="Ej: 500000">
+    </div>
+
+    <div class="card">
+      <div class="card-title">2. Objetivos</div>
+      <label>Meta de Facturación $</label>
+      <input type="number" id="ec_goal" placeholder="Ej: 10000000">
+      
+      <label>Tasa Conversión Web %</label>
+      <input type="number" id="ec_conv" placeholder="Ej: 1.0 (Promedio web)">
+      
+      <label>ROAS Actual (Opcional)</label>
+      <input type="number" id="ec_roas" placeholder="Deja vacío si eres nuevo">
+    </div>
+
+    <button class="btn-calc" onclick="calcEcom()">Auditar Tienda 🔥</button>
+
+    <div id="res_ecom" class="results">
+      <div class="kpi-box">
+        <div class="kpi-label">Presupuesto Ads</div>
+        <div class="kpi-val" id="out_ec_inv">$0</div>
+        <div class="kpi-sub">ROAS Objetivo: <span id="out_ec_target" style="color:#fff"></span></div>
+      </div>
+
+      <div class="mini-kpis">
+        <div class="mini-box">
+          <div class="mini-lbl">ROAS Mínimo</div>
+          <div class="mini-val" id="out_ec_be" style="color:var(--red)">0.0x</div>
+        </div>
+        <div class="mini-box">
+          <div class="mini-lbl">CPA Máximo</div>
+          <div class="mini-val" id="out_ec_cpa">$0</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Análisis de Rentabilidad</div>
+        <table id="tab_ec">
+          <thead><tr><th>Caso</th><th>ROAS</th><th>Neto Final</th><th>Estado</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <footer>Manu | Meta Ads &copy; 2025</footer>
+</div>
+
+<script>
+  // UTILIDADES
+  const $ = (id) => document.getElementById(id);
+  const val = (id) => parseFloat($(id).value) || 0;
+  const fmt = (n) => "$" + Math.floor(n).toLocaleString("es-ES");
+
+  // CAMBIO DE PESTAÑAS
+  function showTab(tabId) {
+    $('leads').classList.add('hidden');
+    $('ecom').classList.add('hidden');
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    
+    $(tabId).classList.remove('hidden');
+    event.target.classList.add('active');
+  }
+
+  // AUTOCOMPLETAR LEADS
+  function autoFillLeads() {
+    const niche = $('ln_niche').value;
+    const rate = $('ln_rate');
+    
+    if(niche === 're') rate.value = 2;   // Inmobiliaria
+    if(niche === 'hl') rate.value = 15;  // Salud
+    if(niche === 'b2') rate.value = 10;  // B2B
+    if(niche === 'ed') rate.value = 5;   // Cursos
+  }
+
+  // CÁLCULO LEADS
+  function calcLeads() {
+    const ticket = val('ln_ticket');
+    const margin = val('ln_margin');
+    const fixed = val('ln_fixed');
+    const rate = val('ln_rate') / 100;
+    const goal = val('ln_goal');
+    const userCpl = val('ln_cpl');
+
+    if (!ticket || !margin || !rate || !goal) return alert("Por favor completa los campos.");
+
+    const salesNeeded = Math.ceil(goal / ticket);
+    const leadsNeeded = Math.ceil(salesNeeded / rate);
+    const maxCpl = margin * rate;
+    
+    // Si no hay CPL, estimamos uno saludable (40% del margen disponible)
+    const projCpl = userCpl > 0 ? userCpl : (maxCpl * 0.4);
+    const investment = leadsNeeded * projCpl;
+
+    // Render KPIs
+    $('out_ln_inv').innerText = fmt(investment);
+    $('out_ln_goal').innerText = fmt(goal);
+    $('out_ln_max').innerText = fmt(maxCpl);
+    $('out_ln_vol').innerText = leadsNeeded;
+
+    // Generar Tabla Escenarios
+    const tbody = $('tab_ln').querySelector('tbody');
+    tbody.innerHTML = "";
+    
+    const scenarios = [
+      { name: "Pesimista", costMult: 1.3, rateMult: 0.8 },
+      { name: "Realista", costMult: 1.0, rateMult: 1.0 },
+      { name: "Optimista", costMult: 0.8, rateMult: 1.2 }
+    ];
+
+    scenarios.forEach(sc => {
+      const s_cpl = projCpl * sc.costMult;
+      const s_rate = rate * sc.rateMult;
+      const s_leads = Math.ceil(goal / ticket / s_rate); // Leads para llegar a la meta
+      const s_inv = s_leads * s_cpl;
+      const s_gross = (s_leads * s_rate) * margin;
+      const s_net = s_gross - s_inv - fixed;
+
+      const cls = s_net > 0 ? "good" : "bad";
+      const txt = s_net > 0 ? "✅ Rentable" : "❌ Pérdida";
+
+      tbody.innerHTML += `<tr>
+        <td>${sc.name}</td>
+        <td>${fmt(s_inv)}</td>
+        <td class="${cls}">${fmt(s_net)}</td>
+        <td class="${cls}">${txt}</td>
+      </tr>`;
+    });
+
+    $('res_leads').style.display = 'block';
+  }
+
+  // CÁLCULO ECOM
+  function calcEcom() {
+    const price = val('ec_price');
+    const cost = val('ec_cost');
+    const fixed = val('ec_fixed');
+    const goal = val('ec_goal');
+    const conv = (val('ec_conv') || 1) / 100;
+    const userRoas = val('ec_roas');
+
+    if (!price || !cost || !goal) return alert("Por favor completa los campos.");
+
+    const margin = price - cost;
+    if (margin <= 0) return alert("El costo supera el precio.");
+
+    const breakEvenRoas = price / margin;
+    const targetRoas = userRoas > 0 ? userRoas : Math.max(breakEvenRoas * 1.5, 2.5);
+    const investment = goal / targetRoas;
+    const maxCpa = margin;
+
+    // Render KPIs
+    $('out_ec_inv').innerText = fmt(investment);
+    $('out_ec_target').innerText = targetRoas.toFixed(2) + "x";
+    $('out_ec_be').innerText = breakEvenRoas.toFixed(2) + "x";
+    $('out_ec_cpa').innerText = fmt(maxCpa);
+
+    // Tabla Escenarios
+    const tbody = $('tab_ec').querySelector('tbody');
+    tbody.innerHTML = "";
+
+    const scenarios = [
+      { name: "Mínimo", roas: breakEvenRoas },
+      { name: "Objetivo", roas: targetRoas },
+      { name: "Escala", roas: targetRoas * 1.25 }
+    ];
+
+    scenarios.forEach(sc => {
+      const s_inv = goal / sc.roas;
+      const s_net = ((goal / price) * margin) - s_inv - fixed;
+      
+      const cls = s_net > 0 ? "good" : "bad";
+      const txt = s_net > 0 ? "✅ Rentable" : "❌ Riesgo";
+
+      tbody.innerHTML += `<tr>
+        <td>${sc.name}</td>
+        <td>${sc.roas.toFixed(2)}x</td>
+        <td class="${cls}">${fmt(s_net)}</td>
+        <td class="${cls}">${txt}</td>
+      </tr>`;
+    });
+
+    $('res_ecom').style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
