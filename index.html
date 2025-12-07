@@ -3,162 +3,532 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANU | Growth & ROI Simulator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <title>MANU | Strategic Command Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* MANU BRANDING */
-            --primary: #FF3300;       /* Naranja Intenso */
-            --primary-dim: #4d1505;   /* Fondo tenue naranja */
+            /* --- BRAND IDENTITY --- */
+            --brand-primary: #FF4500; /* MANU Orange */
+            --brand-glow: rgba(255, 69, 0, 0.4);
             
-            /* UI COLORS */
-            --bg-body: #080808;       /* Casi negro */
-            --bg-panel: #111111;      /* Panel gris muy oscuro */
-            --bg-input: #1a1a1a;
+            /* --- SEMANTIC COLORS --- */
+            --col-traffic: #00d2d3;   /* Cyan for Traffic/Clicks */
+            --col-money: #2ecc71;     /* Green for Profit */
+            --col-cost: #ff4757;      /* Red for Costs */
+            --col-ltv: #a55eea;       /* Purple for Long Term Value */
+            --col-warning: #ffa502;
+            
+            /* --- UI SURFACE --- */
+            --bg-body: #050505;
+            --bg-panel: #0f0f10;
+            --bg-card: #161618;
             --border: #2a2a2a;
-            --text-main: #e0e0e0;
-            --text-muted: #808080;
-            
-            /* STATUS COLORS */
-            --profit: #00C851;
-            --risk: #ffbb33;
-            --loss: #ff4444;
+            --text-main: #f1f2f6;
+            --text-muted: #747d8c;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             background-color: var(--bg-body);
             color: var(--text-main);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
-        /* HEADER */
+        /* --- HEADER --- */
         header {
+            background: rgba(15, 15, 16, 0.95);
             border-bottom: 1px solid var(--border);
             padding: 1.5rem 3rem;
-            background: var(--bg-panel);
             display: flex;
             justify-content: space-between;
             align-items: center;
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        .brand {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+        .brand-logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -1px;
             color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .brand span { color: var(--primary); }
-        .brand-sub { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; letter-spacing: 1px; text-transform: uppercase; margin-left: 10px; }
+        .brand-logo span { color: var(--brand-primary); text-shadow: 0 0 15px var(--brand-glow); }
+        .brand-tag {
+            font-size: 0.75rem;
+            background: #222;
+            padding: 4px 10px;
+            border-radius: 4px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
 
-        /* MAIN GRID */
-        .app-container {
+        /* --- MAIN LAYOUT --- */
+        .dashboard-container {
             display: grid;
-            grid-template-columns: 420px 1fr;
-            flex: 1;
-            height: calc(100vh - 80px);
+            grid-template-columns: 380px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 80px);
         }
 
-        /* --- LEFT PANEL: BUSINESS DATA AUDIT --- */
-        .sidebar {
+        /* --- LEFT: CONTROL CENTER (INPUTS) --- */
+        .controls {
             background: var(--bg-panel);
             border-right: 1px solid var(--border);
             padding: 2rem;
+            height: 100%;
             overflow-y: auto;
+        }
+
+        .input-group { margin-bottom: 2.5rem; }
+        
+        .group-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--brand-primary);
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .field-row { margin-bottom: 1.2rem; position: relative; }
+        
+        label {
+            display: flex; justify-content: space-between;
+            font-size: 0.85rem; color: #ccc; margin-bottom: 8px; font-weight: 500;
+        }
+        .info-tooltip { color: var(--text-muted); font-size: 0.75rem; cursor: help; }
+
+        input, select {
+            width: 100%;
+            background: #000;
+            border: 1px solid var(--border);
+            color: #fff;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        input:focus { border-color: var(--brand-primary); box-shadow: 0 0 0 2px rgba(255, 69, 0, 0.1); }
+
+        /* Range Slider Styling */
+        input[type=range] { padding: 0; height: 4px; background: #333; appearance: none; margin-top: 10px; border: none; }
+        input[type=range]::-webkit-slider-thumb {
+            appearance: none; width: 16px; height: 16px; background: var(--brand-primary); border-radius: 50%; cursor: pointer;
+        }
+
+        /* --- RIGHT: ANALYTICS --- */
+        .analytics {
+            padding: 3rem;
+            background: radial-gradient(circle at 10% 10%, #120505 0%, var(--bg-body) 60%);
             display: flex;
             flex-direction: column;
             gap: 2rem;
         }
 
-        .input-section h3 {
-            font-size: 0.75rem;
-            color: var(--primary);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-bottom: 1rem;
-            border-bottom: 1px solid var(--border);
-            padding-bottom: 0.5rem;
+        /* Top KPI Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
         }
 
-        .form-row {
+        .kpi-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
-            gap: 0.5rem;
-            margin-bottom: 1.2rem;
+            justify-content: space-between;
         }
 
-        .form-row.dual {
-            flex-direction: row;
-            gap: 1rem;
+        .kpi-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
         }
+        .kpi-card.inv::before { background: var(--brand-primary); }
+        .kpi-card.roas::before { background: var(--col-traffic); }
+        .kpi-card.net::before { background: var(--col-money); }
+        .kpi-card.ltv::before { background: var(--col-ltv); }
 
-        label {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
+        .kpi-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; letter-spacing: 0.5px; }
+        .kpi-val { font-size: 1.8rem; font-weight: 700; color: #fff; margin: 10px 0; font-family: 'Space Mono'; }
+        .kpi-sub { font-size: 0.75rem; opacity: 0.7; }
 
-        input, select {
-            background: var(--bg-input);
-            border: 1px solid var(--border);
-            color: #fff;
-            padding: 12px;
-            border-radius: 6px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
-            transition: border-color 0.2s;
-            width: 100%;
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-            background: #222;
-        }
-
-        /* --- RIGHT PANEL: STRATEGIC DASHBOARD --- */
-        .dashboard {
-            padding: 3rem;
-            overflow-y: auto;
-            background: radial-gradient(circle at top right, #150a0a, #080808);
-        }
-
-        /* Top Summary Cards */
-        .summary-grid {
+        /* Funnel Visualization */
+        .funnel-section {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.5rem;
-            margin-bottom: 3rem;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
         }
 
-        .card {
-            background: rgba(255,255,255,0.03);
+        .chart-box {
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            position: relative;
+            border-radius: 16px;
+            padding: 2rem;
         }
 
-        .card.highlight {
-            background: linear-gradient(180deg, rgba(255, 51, 0, 0.08) 0%, rgba(0,0,0,0) 100%);
-            border-color: rgba(255, 51, 0, 0.3);
+        .chart-header {
+            display: flex; justify-content: space-between; margin-bottom: 2rem;
+            border-bottom: 1px solid var(--border); padding-bottom: 1rem;
         }
 
-        .card-label { font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
-        .card-value { font-family: 'Space Grotesk', sans-serif; font-size: 2.2rem; font-weight: 700; color: #fff; }
-        .card-sub { font-size: 0.85rem; margin-top: 8px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; }
+        /* Custom CSS Bar Chart for Funnel */
+        .funnel-row {
+            display: flex; align-items: center; margin-bottom: 15px;
+        }
+        .f-label { width: 120px; font-size: 0.8rem; color: var(--text-muted); text-align: right; padding-right: 15px; }
+        .f-bar-container { flex: 1; height: 30px; background: rgba(255,255,255,0.05); border-radius: 4px; position: relative; overflow: hidden; }
+        .f-bar { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 10px; font-size: 0.75rem; font-weight: 700; color: rgba(0,0,0,0.7); transition: width 0.6s ease; }
         
-        /* Scenario Table */
-        .scenario-container {
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            background: var(--bg-panel);
-            overflow: hidden;
-            margin-bottom: 2rem;
+        .fb-imp { background: var(--text-muted); width: 100%; }
+        .fb-click { background: var(--col-traffic); }
+        .fb-conv { background: var(--brand-primary); }
+        .fb-sale { background: var(--col-money); }
+
+        /* Financial Breakdown Table */
+        .fin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        .fin-table td { padding: 12px 0; border-bottom: 1px solid #222; }
+        .fin-table tr:last-child td { border: none; font-weight: 700; font-size: 1.1rem; color: var(--col-money); }
+        .fin-val { text-align: right; font-family: 'Space Mono'; }
+
+        /* Advisor Message */
+        .advisor-box {
+            background: linear-gradient(90deg, rgba(255, 69, 0, 0.1), transparent);
+            border-left: 4px solid var(--brand-primary);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+        .adv-title { color: var(--brand-primary); font-weight: 700; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 10px; }
+
+        @media (max-width: 1100px) {
+            .dashboard-container { grid-template-columns: 1fr; }
+            .kpi-grid { grid-template-columns: 1fr 1fr; }
+            .funnel-section { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div class="brand-logo">MANU <span>/ ANALYTICS</span></div>
+    <div class="brand-tag">Professional Estimator v9.0</div>
+</header>
+
+<div class="dashboard-container">
+    
+    <div class="controls">
+        
+        <div class="input-group">
+            <div class="group-title">🎯 Objetivo & Estrategia</div>
+            <div class="field-row">
+                <label>Meta de Facturación Mensual ($)</label>
+                <input type="number" id="revenueTarget" value="10000" oninput="calculate()">
+            </div>
+            <div class="field-row">
+                <label>Nicho / Industria <span class="info-tooltip">(Ajusta métricas base)</span></label>
+                <select id="niche" onchange="setBenchmarks()">
+                    <option value="fashion">E-commerce: Moda (High Volume)</option>
+                    <option value="tech">E-commerce: Tech (High Ticket)</option>
+                    <option value="consulting">Servicios / B2B (Lead Gen)</option>
+                    <option value="info">Infoproductos (High Margin)</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="group-title">💰 Economía Unitaria (Unit Economics)</div>
+            <div class="field-row">
+                <label>Ticket Promedio (AOV) ($)</label>
+                <input type="number" id="aov" value="80" oninput="calculate()">
+            </div>
+            <div class="field-row">
+                <label>Costo de Producto (COGS) ($)</label>
+                <input type="number" id="cogs" value="25" oninput="calculate()">
+            </div>
+            <div class="field-row">
+                <label>Fees & Impuestos (% por venta)</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="tax" value="3" placeholder="Tax" title="Impuestos" oninput="calculate()">
+                    <input type="number" id="fees" value="4" placeholder="Gateway" title="Pasarela de Pago" oninput="calculate()">
+                </div>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="group-title">⚡ Eficiencia del Embudo (Funnel)</div>
+            <div class="field-row">
+                <label>CPC Promedio (Costo por Clic) ($)</label>
+                <input type="number" id="cpc" value="0.45" step="0.01" oninput="calculate()">
+                <input type="range" id="cpcR" min="0.1" max="5" step="0.05" value="0.45" oninput="sync('cpc', this.value)">
+            </div>
+            <div class="field-row">
+                <label>Tasa de Conversión Web (%)</label>
+                <input type="number" id="cr" value="1.5" step="0.1" oninput="calculate()">
+                <input type="range" id="crR" min="0.1" max="10" step="0.1" value="1.5" oninput="sync('cr', this.value)">
+            </div>
+        </div>
+
+        <div class="input-group">
+            <div class="group-title">💎 Retención & LTV (Opcional)</div>
+            <div class="field-row">
+                <label>% Clientes que Re-compran</label>
+                <input type="number" id="retention" value="20" oninput="calculate()">
+                <input type="range" id="retentionR" min="0" max="100" value="20" oninput="sync('retention', this.value)">
+            </div>
+        </div>
+
+    </div>
+
+    <div class="analytics">
+        
+        <div class="kpi-grid">
+            <div class="kpi-card inv">
+                <div class="kpi-label">Presupuesto Ads</div>
+                <div class="kpi-val" id="res-adspend">$0</div>
+                <div class="kpi-sub">Mensual para llegar a meta</div>
+            </div>
+            <div class="kpi-card roas">
+                <div class="kpi-label">ROAS Objetivo</div>
+                <div class="kpi-val" style="color:var(--col-traffic)" id="res-roas">0.0x</div>
+                <div class="kpi-sub" id="res-be">BE: 0.0x</div>
+            </div>
+            <div class="kpi-card net">
+                <div class="kpi-label">Utilidad Neta (Front End)</div>
+                <div class="kpi-val" style="color:var(--col-money)" id="res-profit">$0</div>
+                <div class="kpi-sub" id="res-margin">0% Margen Líquido</div>
+            </div>
+            <div class="kpi-card ltv">
+                <div class="kpi-label">Potencial LTV (6 Meses)</div>
+                <div class="kpi-val" style="color:var(--col-ltv)" id="res-ltv">$0</div>
+                <div class="kpi-sub">Ingreso Extra por Retención</div>
+            </div>
+        </div>
+
+        <div class="funnel-section">
+            
+            <div class="chart-box">
+                <div class="chart-header">
+                    <h4>Ingeniería Inversa del Tráfico</h4>
+                </div>
+                <div class="funnel-row">
+                    <div class="f-label">Impresiones (Est.)</div>
+                    <div class="f-bar-container">
+                        <div class="f-bar fb-imp">100% Alcance</div>
+                    </div>
+                </div>
+                <div class="funnel-row">
+                    <div class="f-label">Tráfico / Clics</div>
+                    <div class="f-bar-container">
+                        <div class="f-bar fb-click" id="bar-traffic" style="width: 20%;">0</div>
+                    </div>
+                </div>
+                <div class="funnel-row">
+                    <div class="f-label">Conversiones</div>
+                    <div class="f-bar-container">
+                        <div class="f-bar fb-sale" id="bar-sales" style="width: 5%;">0</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 2rem; padding-top:1rem; border-top:1px solid #333; font-size:0.8rem; color:#888;">
+                    Necesitas comprar <strong id="txt-traffic" style="color:#fff">0</strong> visitas calificadas a un CPA objetivo de <strong id="txt-cpa" style="color:var(--brand-primary)">$0.00</strong>.
+                </div>
+            </div>
+
+            <div class="chart-box">
+                <div class="chart-header">
+                    <h4>Estado de Resultados (P&L)</h4>
+                </div>
+                <table class="fin-table">
+                    <tr>
+                        <td>(+) Facturación Bruta</td>
+                        <td class="fin-val" id="row-rev">$0</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--col-cost)">(-) Costo Producto (COGS)</td>
+                        <td class="fin-val" style="color:var(--col-cost)" id="row-cogs">$0</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--col-cost)">(-) Impuestos & Fees</td>
+                        <td class="fin-val" style="color:var(--col-cost)" id="row-fees">$0</td>
+                    </tr>
+                    <tr>
+                        <td style="color:var(--brand-primary)">(-) Inversión Publicitaria</td>
+                        <td class="fin-val" style="color:var(--brand-primary)" id="row-ads">$0</td>
+                    </tr>
+                    <tr>
+                        <td>(=) UTILIDAD NETA</td>
+                        <td class="fin-val" id="row-net">$0</td>
+                    </tr>
+                </table>
+                
+                <div class="advisor-box">
+                    <div class="adv-title">📢 Análisis de MANU</div>
+                    <p style="font-size:0.85rem; line-height:1.5; color:#ddd;" id="manu-advice">
+                        Cargando análisis estratégico...
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    // --- DATABASE ---
+    const benchmarks = {
+        fashion: { cpc: 0.45, cr: 1.8, label: "Moda" },
+        tech: { cpc: 0.80, cr: 1.2, label: "Tecnología" },
+        consulting: { cpc: 1.50, cr: 3.5, label: "Servicios B2B" }, // Higher CPC, Better conversion on leads
+        info: { cpc: 0.90, cr: 2.5, label: "Infoproductos" }
+    };
+
+    function setBenchmarks() {
+        const niche = document.getElementById('niche').value;
+        const data = benchmarks[niche];
+        document.getElementById('cpc').value = data.cpc;
+        document.getElementById('cpcR').value = data.cpc;
+        document.getElementById('cr').value = data.cr;
+        document.getElementById('crR').value = data.cr;
+        calculate();
+    }
+
+    function sync(id, val) {
+        document.getElementById(id).value = val;
+        calculate();
+    }
+
+    function calculate() {
+        // --- 1. DATA COLLECTION ---
+        const revenueTarget = parseFloat(document.getElementById('revenueTarget').value) || 0;
+        const aov = parseFloat(document.getElementById('aov').value) || 0;
+        const cogs = parseFloat(document.getElementById('cogs').value) || 0;
+        const taxFeesPerc = (parseFloat(document.getElementById('tax').value) + parseFloat(document.getElementById('fees').value)) / 100 || 0;
+        
+        const cpc = parseFloat(document.getElementById('cpc').value) || 0;
+        const cr = parseFloat(document.getElementById('cr').value) / 100 || 0;
+        const retentionPerc = parseFloat(document.getElementById('retention').value) / 100 || 0;
+
+        if (revenueTarget === 0 || aov === 0) return;
+
+        // --- 2. CORE CALCULATION (REVERSE ENGINEERING) ---
+        // Sales needed
+        const salesNeeded = Math.ceil(revenueTarget / aov);
+        
+        // Traffic needed
+        const trafficNeeded = Math.ceil(salesNeeded / cr);
+        
+        // Ad Spend needed
+        const adSpend = trafficNeeded * cpc;
+        
+        // --- 3. FINANCIALS ---
+        const totalCOGS = salesNeeded * cogs;
+        const totalFees = revenueTarget * taxFeesPerc;
+        const totalCosts = totalCOGS + totalFees + adSpend;
+        const netProfit = revenueTarget - totalCosts;
+        
+        // Metrics
+        const roas = revenueTarget / adSpend;
+        const cpa = adSpend / salesNeeded;
+        const netMargin = (netProfit / revenueTarget) * 100;
+        
+        // Break Even Analysis
+        // Unit Margin = AOV - COGS - (AOV * Fees)
+        const unitMargin = aov - cogs - (aov * taxFeesPerc);
+        const breakEvenROAS = aov / unitMargin; // Correct formula for BE ROAS
+        const maxCPA = unitMargin; // Maximum we can pay for a client
+
+        // --- 4. LTV PROJECTION (The "Expert" Touch) ---
+        // Simple projection: If X% return and buy again in 6 months
+        const recurringSales = Math.floor(salesNeeded * retentionPerc);
+        const ltvRevenueExtra = recurringSales * aov; // Assuming same AOV for 2nd purchase
+        // Cost for recurring is usually $0 (email/organic), so high profit
+        const ltvProfit = ltvRevenueExtra * (1 - (cogs/aov) - taxFeesPerc); 
+
+        // --- 5. RENDER DOM ---
+        
+        // KPIs
+        document.getElementById('res-adspend').innerText = fmtMoney(adSpend);
+        document.getElementById('res-roas').innerText = roas.toFixed(2) + "x";
+        document.getElementById('res-be').innerText = "BE: " + breakEvenROAS.toFixed(2) + "x";
+        document.getElementById('res-profit').innerText = fmtMoney(netProfit);
+        document.getElementById('res-margin').innerText = netMargin.toFixed(1) + "% Margen";
+        document.getElementById('res-ltv').innerText = "+" + fmtMoney(ltvProfit);
+
+        // Funnel Bars
+        document.getElementById('bar-traffic').innerText = trafficNeeded.toLocaleString() + " Clics";
+        document.getElementById('bar-sales').innerText = salesNeeded + " Ventas";
+        document.getElementById('txt-traffic').innerText = trafficNeeded.toLocaleString();
+        document.getElementById('txt-cpa').innerText = fmtMoney(cpa);
+
+        // Adjust Bar Widths relative to Impressions (Arbitrary 100% for visual)
+        // Let's make Traffic 50% max and Sales relative to CR
+        document.getElementById('bar-traffic').style.width = "40%";
+        document.getElementById('bar-sales').style.width = Math.max(5, 40 * cr) + "%";
+
+        // Financial Table
+        document.getElementById('row-rev').innerText = fmtMoney(revenueTarget);
+        document.getElementById('row-cogs').innerText = "(" + fmtMoney(totalCOGS) + ")";
+        document.getElementById('row-fees').innerText = "(" + fmtMoney(totalFees) + ")";
+        document.getElementById('row-ads').innerText = "(" + fmtMoney(adSpend) + ")";
+        document.getElementById('row-net').innerText = fmtMoney(netProfit);
+
+        // Color Logic for Profit
+        const profitEl = document.getElementById('res-profit');
+        const netRow = document.getElementById('row-net');
+        if(netProfit < 0) {
+            profitEl.style.color = "var(--col-cost)";
+            netRow.style.color = "var(--col-cost)";
+        } else {
+            profitEl.style.color = "var(--col-money)";
+            netRow.style.color = "var(--col-money)";
         }
 
-        .table-header {
+        // --- 6. MANU ADVICE (DYNAMIC LOGIC) ---
+        generateAdvice(roas, breakEvenROAS, netMargin, cpa, maxCPA, retentionPerc);
+    }
+
+    function generateAdvice(roas, beRoas, margin, cpa, maxCPA, retention) {
+        const box = document.getElementById('manu-advice');
+        let msg = "";
+
+        if (roas < beRoas) {
+            msg = `🛑 <strong>ALERTA CRÍTICA:</strong> Estás perdiendo dinero. Tu ROAS actual (${roas.toFixed(2)}x) no cubre tus costos operativos. <br><br><strong>Solución:</strong> Necesitas aumentar tu Tasa de Conversión o subir el precio (AOV). Tu CPA actual es $${cpa.toFixed(0)} y tu máximo permitido es $${maxCPA.toFixed(0)}.`;
+        } else if (margin < 15) {
+            msg = `⚠️ <strong>ZONA DE PELIGRO:</strong> Eres rentable, pero tu margen (${margin.toFixed(1)}%) es muy frágil. Cualquier subida en el costo de anuncios te pondrá en rojo. <br><br><strong>Estrategia MANU:</strong> Enfócate en aumentar el LTV. Si subes la retención al ${(retention*100 + 10).toFixed(0)}%, tu utilidad se dispara sin gastar más en ads.`;
+        } else {
+            msg = `🚀 <strong>ESCENARIO ESCALABLE:</strong> Tienes un margen sólido (${margin.toFixed(1)}%) y un ROAS saludable. <br><br><strong>Próximo paso:</strong> Puedes permitirte aumentar el presupuesto un 20-30% agresivamente. Tu "colchón" de rentabilidad te permite dominar la subasta contra competidores más débiles.`;
+        }
+        box.innerHTML = msg;
+    }
+
+    function fmtMoney(num) {
+        return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+    }
+
+    // Init
+    calculate();
+</script>
+
+</body>
+</html>
