@@ -1,189 +1,371 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Traffic OS | Manu Meta Ads</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #FF5500;
-            --primary-dim: rgba(255, 85, 0, 0.15);
-            --primary-glow: rgba(255, 85, 0, 0.6);
-            --bg: #050505;
-            --surface: #0f0f0f;
-            --surface-glass: rgba(20, 20, 20, 0.7);
-            --border: #2a2a2a;
-            --text-main: #ffffff;
-            --text-muted: #949494;
-            --success: #00E676;
-            --warning: #FFC400;
-            --danger: #FF1744;
-            --radius: 12px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manu Meta Ads | Traffic OS</title>
+<style>
+    /* RESET & CORE */
+    :root {
+        --primary: #FF4500;
+        --primary-dim: rgba(255, 69, 0, 0.15);
+        --bg: #000000;
+        --panel: #111111;
+        --border: #333333;
+        --text: #ffffff;
+        --sub: #888888;
+        --success: #00E676;
+        --danger: #FF1744;
+        --warn: #FFC400;
+    }
+    * { box-sizing: border-box; outline: none; }
+    body { 
+        background-color: var(--bg); 
+        color: var(--text); 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        margin: 0; 
+        padding: 20px; 
+        line-height: 1.5;
+    }
+    .app-container { max-width: 800px; margin: 0 auto; padding-bottom: 80px; }
 
-        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        
-        body {
-            background-color: var(--bg);
-            background-image: 
-                radial-gradient(circle at 50% 0%, #1a0b00 0%, transparent 40%),
-                linear-gradient(to bottom, #050505 0%, #000 100%);
-            color: var(--text-main);
-            font-family: 'Inter', sans-serif;
-            margin: 0; padding: 0;
-            min-height: 100vh;
-            font-size: 15px;
-        }
+    /* HEADER */
+    header { text-align: center; border-bottom: 1px solid var(--border); padding-bottom: 20px; margin-bottom: 30px; }
+    h1 { margin: 0; font-weight: 900; letter-spacing: 2px; font-size: 24px; text-transform: uppercase; }
+    h1 span { color: var(--primary); }
+    .badge { background: var(--primary-dim); color: var(--primary); padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; border: 1px solid var(--primary); text-transform: uppercase; }
 
-        /* --- LAYOUT & UTILS --- */
-        .container { max-width: 900px; margin: 0 auto; padding: 40px 20px 100px; }
-        .grid { display: grid; gap: 20px; }
-        .grid-2 { grid-template-columns: 1fr 1fr; }
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .hidden { display: none; }
-        .flex-between { display: flex; justify-content: space-between; align-items: center; }
+    /* TABS */
+    .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+    .tab { flex: 1; padding: 15px; background: var(--panel); border: 1px solid var(--border); color: var(--sub); font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.2s; text-transform: uppercase; font-size: 12px; }
+    .tab.active { background: var(--primary); color: #000; border-color: var(--primary); box-shadow: 0 0 15px rgba(255,69,0,0.4); }
 
-        /* --- HEADER --- */
-        header { text-align: center; margin-bottom: 50px; position: relative; }
-        .logo { 
-            font-family: 'JetBrains Mono', monospace; 
-            font-weight: 800; font-size: 1.8rem; letter-spacing: -1px; 
-            text-transform: uppercase; 
-            display: inline-block;
-            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 10px;
-        }
-        .badge { 
-            background: var(--primary-dim); color: var(--primary); 
-            padding: 4px 10px; border-radius: 20px; font-size: 0.7rem; 
-            font-weight: 700; border: 1px solid var(--primary); text-transform: uppercase; letter-spacing: 1px;
-        }
+    /* FORMS & CARDS */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .card { background: var(--panel); border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; }
+    .card-title { color: var(--primary); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; display: block; border-left: 3px solid var(--primary); padding-left: 10px; }
 
-        /* --- TABS --- */
-        .tabs { 
-            background: var(--surface); border: 1px solid var(--border); 
-            padding: 6px; border-radius: 16px; display: flex; gap: 8px; margin-bottom: 30px;
-        }
-        .tab { 
-            flex: 1; padding: 14px; background: transparent; border: none; 
-            color: var(--text-muted); font-weight: 600; cursor: pointer; 
-            border-radius: 10px; transition: all 0.3s ease; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px;
-        }
-        .tab:hover { color: #fff; }
-        .tab.active { 
-            background: var(--primary); color: #000; font-weight: 800; 
-            box-shadow: 0 4px 20px var(--primary-glow);
-        }
+    label { display: block; font-size: 11px; color: var(--sub); margin-bottom: 5px; font-weight: 600; text-transform: uppercase; }
+    input, select { width: 100%; padding: 12px; background: #000; border: 1px solid var(--border); color: #fff; border-radius: 6px; font-size: 14px; font-family: monospace; transition: 0.2s; }
+    input:focus, select:focus { border-color: var(--primary); }
+    .hint { font-size: 10px; color: #555; margin-top: 4px; }
 
-        /* --- CARDS & INPUTS --- */
-        .card { 
-            background: var(--surface-glass); backdrop-filter: blur(10px);
-            border: 1px solid var(--border); border-radius: var(--radius); 
-            padding: 25px; transition: 0.3s;
-        }
-        .card:hover { border-color: #444; }
-        .card-header { 
-            display: flex; align-items: center; gap: 10px; margin-bottom: 20px; 
-            padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-        .icon { color: var(--primary); }
-        .card-title { font-weight: 700; font-size: 0.9rem; text-transform: uppercase; color: #fff; letter-spacing: 0.5px; }
+    /* BUTTON */
+    .btn-main { width: 100%; padding: 18px; background: linear-gradient(135deg, var(--primary), #ff6a00); color: #000; font-weight: 900; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; text-transform: uppercase; letter-spacing: 1px; transition: transform 0.1s; }
+    .btn-main:active { transform: scale(0.98); }
 
-        .input-group { margin-bottom: 15px; position: relative; }
-        label { display: block; color: var(--text-muted); font-size: 0.75rem; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; }
-        .input-wrapper { position: relative; }
-        .currency { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #666; font-family: monospace; }
-        
-        input, select { 
-            width: 100%; background: #080808; border: 1px solid var(--border); 
-            color: #fff; padding: 12px 12px 12px 30px; border-radius: 8px; 
-            font-family: 'JetBrains Mono', monospace; font-size: 0.95rem; 
-            transition: 0.2s;
-        }
-        select { padding-left: 12px; appearance: none; cursor: pointer; }
-        input:focus, select:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 2px var(--primary-dim); }
+    /* RESULTS SECTION */
+    #results { display: none; margin-top: 40px; border-top: 1px solid var(--border); padding-top: 30px; }
+    
+    .viability-box { padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid transparent; display: flex; align-items: center; justify-content: space-between; }
+    .v-good { background: rgba(0, 230, 118, 0.1); border-color: var(--success); color: var(--success); }
+    .v-bad { background: rgba(255, 23, 68, 0.1); border-color: var(--danger); color: var(--danger); }
+    .v-warn { background: rgba(255, 196, 0, 0.1); border-color: var(--warn); color: var(--warn); }
+    
+    .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+    .kpi { background: #0a0a0a; border: 1px solid var(--border); padding: 15px; border-radius: 8px; text-align: center; }
+    .kpi.hero { grid-column: span 2; background: radial-gradient(circle at top, #1a0b00, #000); border-color: var(--primary); }
+    .kv { font-size: 24px; font-weight: 900; color: #fff; margin: 5px 0; }
+    .kv.xl { font-size: 36px; color: var(--primary); text-shadow: 0 0 20px rgba(255,69,0,0.3); }
+    .kl { font-size: 10px; color: var(--sub); text-transform: uppercase; letter-spacing: 1px; }
 
-        /* --- ACTION BUTTON --- */
-        .btn-main {
-            width: 100%; padding: 20px; border-radius: var(--radius); border: none;
-            background: linear-gradient(135deg, var(--primary) 0%, #ff8800 100%);
-            color: #000; font-weight: 900; font-size: 1.1rem; text-transform: uppercase;
-            letter-spacing: 1px; cursor: pointer; margin-top: 20px;
-            box-shadow: 0 10px 40px rgba(255, 85, 0, 0.25);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        .btn-main:hover { transform: translateY(-2px); box-shadow: 0 15px 50px rgba(255, 85, 0, 0.4); }
-        .btn-main:active { transform: scale(0.98); }
+    /* ANALYSIS TEXT */
+    .analysis-text { font-size: 13px; color: #ccc; margin-bottom: 20px; padding: 15px; background: #151515; border-radius: 8px; border-left: 4px solid var(--sub); }
+    .analysis-text strong { color: #fff; }
 
-        /* --- DASHBOARD RESULTADOS --- */
-        .dashboard { display: none; margin-top: 50px; animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: translateY(0); } }
+    /* TABLE */
+    .table-wrap { overflow-x: auto; background: var(--panel); border-radius: 8px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th { text-align: left; background: #050505; padding: 12px; color: var(--sub); font-size: 10px; text-transform: uppercase; }
+    td { padding: 12px; border-bottom: 1px solid #222; color: #ddd; }
+    .profit { color: var(--success); font-weight: bold; }
+    .loss { color: var(--danger); font-weight: bold; }
 
-        /* Score Gauge */
-        .viability-banner {
-            background: linear-gradient(90deg, #111 0%, #000 100%);
-            border: 1px solid var(--border); border-radius: var(--radius);
-            padding: 25px; display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 25px; position: relative; overflow: hidden;
-        }
-        .viability-banner::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%;
-            background: var(--primary); box-shadow: 2px 0 15px var(--primary);
-        }
-        .score-num { font-size: 3.5rem; font-weight: 900; font-family: 'JetBrains Mono'; line-height: 1; }
-        .score-info h3 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
-        .score-info p { margin: 5px 0 0; font-size: 0.9rem; color: var(--text-muted); max-width: 400px; }
+    footer { text-align: center; margin-top: 50px; font-size: 11px; color: #444; }
+    .hidden { display: none; }
 
-        /* KPI Cards */
-        .kpi-card { 
-            background: #0a0a0a; border: 1px solid var(--border); 
-            border-radius: var(--radius); padding: 20px; text-align: center; 
-            display: flex; flex-direction: column; justify-content: center;
-        }
-        .kpi-card.highlight { 
-            background: radial-gradient(circle at top, rgba(255,85,0,0.1), transparent); 
-            border-color: rgba(255,85,0,0.3);
-        }
-        .kpi-val { font-size: 1.8rem; font-weight: 800; color: #fff; margin: 8px 0; font-family: 'JetBrains Mono'; }
-        .kpi-val.xl { font-size: 2.5rem; color: var(--primary); text-shadow: 0 0 20px rgba(255,85,0,0.3); }
-        .kpi-lbl { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-
-        /* Status Tags */
-        .status-tag { 
-            padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: bold; text-transform: uppercase;
-        }
-        .st-good { background: rgba(0,230,118,0.1); color: var(--success); }
-        .st-bad { background: rgba(255,23,68,0.1); color: var(--danger); }
-        .st-warn { background: rgba(255,196,0,0.1); color: var(--warning); }
-
-        /* Table */
-        .table-container { overflow-x: auto; border-radius: var(--radius); border: 1px solid var(--border); }
-        table { width: 100%; border-collapse: collapse; background: var(--surface); }
-        th { text-align: left; padding: 15px; font-size: 11px; text-transform: uppercase; color: var(--text-muted); background: #050505; }
-        td { padding: 15px; border-top: 1px solid #222; font-size: 13px; }
-        .num-cell { font-family: 'JetBrains Mono'; }
-
-        /* Learning Phase Alert */
-        .alert-box {
-            margin-top: 20px; padding: 15px; border-radius: 8px; font-size: 0.9rem;
-            display: flex; gap: 10px; align-items: start;
-        }
-        .alert-bad { background: rgba(255, 23, 68, 0.1); border: 1px solid var(--danger); color: #ff8a80; }
-        .alert-good { background: rgba(0, 230, 118, 0.1); border: 1px solid var(--success); color: #b9f6ca; }
-
-        footer { text-align: center; margin-top: 60px; color: #444; font-size: 12px; }
-
-        @media (max-width: 768px) {
-            .grid-2, .grid-3 { grid-template-columns: 1fr; }
-            .viability-banner { flex-direction: column; text-align: center; gap: 15px; }
-            .viability-banner::before { width: 100%; height: 4px; top: 0; left: 0; }
-        }
-    </style>
+    @media(max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
 
-<div class="container">
-    <header
+<div class="app-container">
+    <header>
+        <h1>Manu <span>| Meta Ads</span></h1>
+        <br>
+        <span class="badge">Traffic OS v13.0</span>
+    </header>
+
+    <div class="tabs">
+        <button class="tab active" onclick="setMode('leads')">💬 Servicios (Leads)</button>
+        <button class="tab" onclick="setMode('ecom')">🛒 E-Commerce</button>
+    </div>
+
+    <div class="grid-2">
+        <div class="card">
+            <span class="card-title">1. Datos del Negocio</span>
+            
+            <label>Industria (Benchmarks)</label>
+            <select id="niche" onchange="autoFill()">
+                <option value="">-- Manual --</option>
+                <option value="re">Inmobiliaria (Ticket Alto)</option>
+                <option value="hl">Salud / Estética</option>
+                <option value="b2">Servicios B2B</option>
+                <option value="ed">Cursos / Info</option>
+            </select>
+            
+            <div style="margin-top:15px">
+                <label>Ticket Promedio ($)</label>
+                <input type="number" id="ticket" placeholder="Ej: 50000">
+            </div>
+            
+            <div style="margin-top:15px">
+                <label>Margen Real ($)</label>
+                <input type="number" id="margin" placeholder="Ej: 20000">
+                <div class="hint">Ganancia bruta por venta.</div>
+            </div>
+
+            <div style="margin-top:15px">
+                <label>Gastos Fijos Mensuales ($)</label>
+                <input type="number" id="fixed" placeholder="Ej: 500000">
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="card-title">2. Proyección & Metas</span>
+            
+            <label>Meta Facturación Mensual ($)</label>
+            <input type="number" id="goal" placeholder="Ej: 5000000">
+            
+            <div id="leads-input" style="margin-top:15px">
+                <label>Tasa de Cierre Ventas (%)</label>
+                <input type="number" id="close_rate" placeholder="10">
+                <div class="hint">Promedio Latam: 5% - 15%</div>
+                
+                <div style="margin-top:15px">
+                    <label>Costo x Lead Estimado ($)</label>
+                    <input type="number" id="cpl" placeholder="Opcional">
+                    <div class="hint">Si no sabes, calcularemos el ideal.</div>
+                </div>
+            </div>
+
+            <div id="ecom-input" class="hidden" style="margin-top:15px">
+                <label>Tasa Conversión Web (%)</label>
+                <input type="number" id="conv_rate" placeholder="1.5">
+                <div class="hint">Promedio Ecom: 1% - 3%</div>
+                
+                <div style="margin-top:15px">
+                    <label>ROAS Actual (Opcional)</label>
+                    <input type="number" id="roas" placeholder="Opcional">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="btn-main" onclick="calculate()">Ejecutar Auditoría</button>
+
+    <div id="results">
+        
+        <div id="diag-box" class="viability-box v-warn">
+            <div>
+                <h3 style="margin:0" id="diag-title">ANALIZANDO...</h3>
+                <small id="diag-desc">...</small>
+            </div>
+            <div style="font-size:24px; font-weight:900" id="diag-score">--/100</div>
+        </div>
+
+        <div class="analysis-text" id="analysis-text">
+            Esperando datos...
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi hero">
+                <div class="kl">Inversión Sugerida</div>
+                <div class="kv xl" id="res-inv">$0</div>
+                <div class="kl">Presupuesto Mensual</div>
+            </div>
+            <div class="kpi">
+                <div class="kl" id="lbl-limit">CPA Máximo</div>
+                <div class="kv" id="res-max" style="color:var(--danger)">$0</div>
+                <div class="kl">Punto de Quiebre</div>
+            </div>
+            <div class="kpi">
+                <div class="kl">ROAS Objetivo</div>
+                <div class="kv" id="res-target" style="color:var(--success)">0x</div>
+                <div class="kl">Rentabilidad Real</div>
+            </div>
+            <div class="kpi">
+                <div class="kl">Tráfico/Leads</div>
+                <div class="kv" id="res-vol">0</div>
+                <div class="kl">Volumen Necesario</div>
+            </div>
+            <div class="kpi">
+                <div class="kl">Utilidad Neta</div>
+                <div class="kv" id="res-net">$0</div>
+                <div class="kl">Post-Todo (Bolsillo)</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <span class="card-title">Simulación de Escenarios (Riesgo vs Escala)</span>
+            <div class="table-wrap">
+                <table id="sc-table">
+                    <thead>
+                        <tr>
+                            <th>Escenario</th>
+                            <th>Costos Ads</th>
+                            <th>Inversión</th>
+                            <th>Neto Final</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Herramienta Oficial | <strong>Manu Meta Ads</strong></p>
+    </footer>
+</div>
+
+<script>
+    // --- CORE LOGIC ---
+    let MODE = 'leads';
+    const $ = id => document.getElementById(id);
+    const val = id => parseFloat($(id).value) || 0;
+    const fmt = n => "$" + Math.floor(n).toLocaleString('es-ES');
+
+    function setMode(m) {
+        MODE = m;
+        $('leads-input').className = m === 'leads' ? '' : 'hidden';
+        $('ecom-input').className = m === 'ecom' ? '' : 'hidden';
+        
+        $('lbl-limit').innerText = m === 'leads' ? 'CPL Máximo' : 'CPA Máximo';
+        
+        document.querySelectorAll('.tab').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        $('results').style.display = 'none';
+    }
+
+    function autoFill() {
+        const n = $('niche').value;
+        const r = $('close_rate');
+        // Benchmarks
+        if(n=='re') r.value = 2;   // Inmobiliaria
+        if(n=='hl') r.value = 15;  // Salud
+        if(n=='b2') r.value = 10;  // B2B
+        if(n=='ed') r.value = 5;   // Cursos
+    }
+
+    function calculate() {
+        const TICKET = val('ticket');
+        const MARGIN = val('margin');
+        const FIXED = val('fixed');
+        const GOAL = val('goal');
+
+        if (!TICKET || !GOAL) return alert("Por favor ingresa Ticket y Meta.");
+        if (MARGIN > TICKET) return alert("El margen no puede ser mayor al precio.");
+
+        // 1. Core Calc
+        let sales = Math.ceil(GOAL / TICKET);
+        let invest = 0, volume = 0, limit = 0, target = 0;
+        let baseCost = 0; // CPL or CPA used
+
+        if (MODE === 'leads') {
+            let rate = val('close_rate') / 100 || 0.1;
+            let userCpl = val('cpl');
+            
+            volume = Math.ceil(sales / rate); // Leads needed
+            limit = MARGIN * rate; // Max CPL (Break even)
+            
+            // Expert logic: Healthy CPL is 30-40% of Max
+            baseCost = userCpl > 0 ? userCpl : (limit * 0.4);
+            invest = volume * baseCost;
+            
+        } else { // Ecom
+            let conv = val('conv_rate') / 100 || 0.015;
+            let userRoas = val('roas');
+            
+            limit = MARGIN; // Max CPA
+            let breakEvenRoas = TICKET / MARGIN;
+            
+            // Expert logic: Target ROAS
+            let targetRoas = userRoas > 0 ? userRoas : Math.max(breakEvenRoas * 1.5, 2.5);
+            
+            invest = GOAL / targetRoas;
+            volume = Math.ceil(sales / conv); // Clicks (aprox)
+            baseCost = invest / volume; // CPC derived
+        }
+
+        // 2. Financials
+        let grossProfit = sales * MARGIN;
+        let netProfit = grossProfit - invest - FIXED;
+        let finalRoas = GOAL / invest;
+
+        // 3. Diagnosis AI
+        let score = 100;
+        let title = "EXCELENTE";
+        let desc = "Tu negocio está listo para escalar.";
+        let boxClass = "v-good";
+        let analysis = "";
+
+        // Penalties
+        if (netProfit < 0) {
+            score = 0; title = "NO VIABLE"; desc = "La estructura de costos genera pérdidas."; boxClass = "v-bad";
+            analysis = `<strong>⚠️ ALERTA ROJA:</strong> Con los costos actuales, pierdes dinero. Tu margen de <strong>${fmt(MARGIN)}</strong> no soporta la inversión necesaria + gastos fijos.`;
+        } else if (netProfit < FIXED) {
+            score = 40; title = "RIESGO ALTO"; desc = "La ganancia apenas cubre los fijos."; boxClass = "v-warn";
+            analysis = `<strong>⚠️ PRECAUCIÓN:</strong> El negocio es positivo, pero el margen de error es mínimo. Necesitas optimizar tu Tasa de Cierre/Conversión para estar seguro.`;
+        } else {
+            analysis = `<strong>✅ LUZ VERDE:</strong> Tienes un modelo saludable. Por cada $1 invertido en ads, tu sistema devuelve lo suficiente para cubrir costos y generar utilidad.`;
+        }
+
+        // Learning Phase Check
+        let estCPA = invest / sales;
+        let weeklyConv = (invest / 4) / estCPA;
+        if (weeklyConv < 30) {
+            analysis += `<br><br><strong>ℹ️ NOTA TÉCNICA:</strong> Tu presupuesto genera ~${Math.floor(weeklyConv)} ventas/semana. Meta recomienda 50. Podrías tardar en salir de la fase de aprendizaje.`;
+        }
+
+        // Render UI
+        $('diag-title').innerText = title;
+        $('diag-desc').innerText = desc;
+        $('diag-score').innerText = score + "/100";
+        $('diag-box').className = "viability-box " + boxClass;
+        $('analysis-text').innerHTML = analysis;
+
+        $('res-inv').innerText = fmt(invest);
+        $('res-max').innerText = fmt(limit);
+        $('res-target').innerText = finalRoas.toFixed(2) + "x";
+        $('res-vol').innerText = volume.toLocaleString();
+        $('res-net').innerText = fmt(netProfit);
+        $('res-net').style.color = netProfit > 0 ? "var(--success)" : "var(--danger)";
+
+        // Table
+        let tbody = $('sc-table').querySelector('tbody');
+        tbody.innerHTML = "";
+        
+        [{n:"Pesimista (Costos +30%)", m:1.3}, {n:"Realista", m:1.0}, {n:"Optimista (Costos -20%)", m:0.8}].forEach(s => {
+            let s_inv = invest * s.m;
+            let s_net = grossProfit - s_inv - FIXED;
+            let css = s_net > 0 ? "profit" : "loss";
+            let txt = s_net > 0 ? "RENTABLE" : "PÉRDIDA";
+            
+            tbody.innerHTML += `<tr>
+                <td>${s.n}</td>
+                <td>${(s.m*100).toFixed(0)}%</td>
+                <td>${fmt(s_inv)}</td>
+                <td class="${css}">${fmt(s_net)}</td>
+                <td class="${css}">${txt}</td>
+            </tr>`;
+        });
+
+        $('results').style.display = "block";
+    }
+</script>
+
+</body>
+</html>
