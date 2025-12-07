@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Rentabilidad | Manu Meta Ads</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+    /* --- CONFIGURACIÓN VISUAL (BRANDING) --- */
+    :root {
+        --primary: #FF4500;       /* Naranja Marca */
+        --primary-dark: #cc3700;
+        --bg-body: #050505;       /* Negro Fondo */
+        --bg-card: #121212;       /* Gris Panel */
+        --bg-input: #1E1E1E;
+        --border: #2A2A2A;
+        --text-main: #FFFFFF;
+        --text-muted: #A0A0A0;
+        
+        --success: #00E676;       /* Verde Rentable */
+        --warning: #FFC400;       /* Amarillo Riesgo */
+        --danger: #FF1744;        /* Rojo Pérdida */
+        
+        --shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+
+    * { box-sizing: border-box; outline: none; }
+
+    body {
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        font-family: 'Manrope', sans-serif;
+        margin: 0; padding: 0;
+        line-height: 1.5;
+        font-size: 15px;
+    }
+
+    .app-container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 40px 20px 80px;
+    }
+
+    /* --- HEADER --- */
+    header {
+        text-align: center;
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .brand-logo {
+        font-weight: 800;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        margin: 0;
+    }
+    .brand-logo span { color: var(--primary); }
+    
+    .app-title {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+        margin-top: 5px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    /* --- NAVEGACIÓN --- */
+    .nav-tabs {
+        display: flex;
+        background: var(--bg-card);
+        padding: 5px;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        margin-bottom: 30px;
+    }
+    
+    .nav-btn {
+        flex: 1;
+        padding: 15px;
+        background: transparent;
+        border: none;
+        color: var(--text-muted);
+        font-weight: 700;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        cursor: pointer;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-btn.active {
+        background: var(--primary);
+        color: #000;
+        box-shadow: 0 4px 15px rgba(255, 69, 0, 0.3);
+    }
+
+    /* --- FORMULARIO --- */
+    .grid-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 25px;
+        height: 100%;
+    }
+
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 20px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .card-title {
+        font-weight: 700;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        color: var(--primary);
+        letter-spacing: 1px;
+    }
+
+    .input-group { margin-bottom: 15px; }
+    
+    label {
+        display: block;
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .input-wrapper { position: relative; }
+    .currency-symbol {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #555;
+        font-weight: bold;
+    }
+    
+    input, select {
+        width: 100%;
+        padding: 14px 14px 14px 35px;
+        background: var(--bg-input);
+        border: 1px solid var(--border);
+        color: #fff;
+        border-radius: 8px;
+        font-family: 'Manrope', sans-serif;
+        font-size: 1rem;
+        transition: border 0.2s;
+    }
+    select { padding-left: 15px; cursor: pointer; }
+    input:focus { border-color: var(--primary); }
+    
+    .hint {
+        font-size: 0.7rem;
+        color: #555;
+        margin-top: 4px;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .btn-calculate {
+        width: 100%;
+        padding: 20px;
+        margin-top: 20px;
+        background: linear-gradient(135deg, var(--primary) 0%, #ff7700 100%);
+        color: #000;
+        font-weight: 900;
+        text-transform: uppercase;
+        font-size: 1.1rem;
+        border: none;
+        border-radius: 12px;
+        cursor: pointer;
+        box-shadow: 0 10px 30px rgba(255, 69, 0, 0.2);
+        transition: transform 0.1s;
+    }
+    .btn-calculate:active { transform: scale(0.98); }
+
+    /* --- RESULTADOS --- */
+    #results-area { display: none; margin-top: 40px; animation: slideUp 0.5s ease; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    /* SCORECARD */
+    .score-banner {
+        background: linear-gradient(90deg, #1A1A1A 0%, #000 100%);
+        border: 1px solid var(--border);
+        border-left: 5px solid var(--text-muted);
+        border-radius: 12px;
+        padding: 25px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    .score-text h3 { margin: 0; font-size: 1.2rem; text-transform: uppercase; }
+    .score-text p { margin: 5px 0 0; color: var(--text-muted); font-size: 0.9rem; }
+    .score-number { font-size: 2.5rem; font-weight: 900; }
+
+    /* KPI GRID */
+    .kpi-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    .kpi-box {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+    }
+    .kpi-box.main {
+        background: radial-gradient(circle at top, rgba(255,69,0,0.1), transparent);
+        border-color: rgba(255,69,0,0.3);
+    }
+    .kpi-label { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
+    .kpi-value { font-size: 1.8rem; font-weight: 800; color: #fff; margin: 8px 0; }
+    .kpi-value.highlight { color: var(--primary); font-size: 2.2rem; text-shadow: 0 0 20px rgba(255,69,0,0.2); }
+
+    /* TABLA ESCENARIOS */
+    .table-container {
+        overflow-x: auto;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: var(--bg-card);
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; }
+    th { text-align: left; padding: 15px; background: #080808; color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+    td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; }
+    tr:last-child td { border: none; }
+    
+    .status-badge { padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; text-transform: uppercase; }
+    .st-ok { background: rgba(0,230,118,0.1); color: var(--success); }
+    .st-bad { background: rgba(255,23,68,0.1); color: var(--danger); }
+
+    /* FOOTER */
+    footer { text-align: center; margin-top: 60px; font-size: 0.8rem; color: #444; }
+
+    @media(max-width: 768px) {
+        .grid-layout { grid-template-columns: 1fr; }
+        .kpi-container { grid-template-columns: 1fr; }
+        .score-banner { flex-direction: column; text-align: center; gap: 15px; }
+    }
+    .hidden { display: none; }
+</style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1 class="brand-logo">MANU <span>| META ADS</span></h1>
+        <div class="app-title">Calculadora de Rentabilidad Publicitaria</div>
+    </header>
+
+    <div class="nav-tabs">
+        <button class="nav-btn active" onclick="setMode('leads')">📱 Ventas por WhatsApp / Servicios</button>
+        <button class="nav-btn" onclick="setMode('ecom')">🛒 Ventas por Web / E-Commerce</button>
+    </div>
+
+    <div class="grid-layout">
+        
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">1. Datos Financieros</span>
+            </div>
+            
+            <div class="input-group">
+                <label>Ticket Promedio (Valor de Venta)</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="ticket" placeholder="Ej: 50000">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Costo Variable (Producto/Servicio)</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="cogs" placeholder="Ej: 20000">
+                </div>
+                <div class="hint"><span>Incluye: Costo prod, envío, empaque.</span></div>
+            </div>
+
+            <div class="input-group">
+                <label>Gastos Fijos Mensuales</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="fixed" placeholder="Ej: 300000">
+                </div>
+                <div class="hint"><span>Sueldos, agencia, luz, software.</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">2. Proyección y Metas</span>
+            </div>
+
+            <div class="input-group">
+                <label>Meta de Facturación Mensual</label>
+                <div class="input-wrapper">
+                    <span class="currency-symbol">$</span>
+                    <input type="number" id="goal" placeholder="Ej: 5000000">
+                </div>
+            </div>
+
+            <div id="inputs-leads">
+                <div class="input-group">
+                    <label>Tasa de Cierre de Ventas (%)</label>
+                    <input type="number" id="close_rate" placeholder="Ej: 10">
+                    <div class="hint"><span>¿De 100 chats, cuántos compran?</span></div>
+                </div>
+                <div class="input-group">
+                    <label>Costo por Lead Actual (Opcional)</label>
+                    <div class="input-wrapper">
+                        <span class="currency-symbol">$</span>
+                        <input type="number" id="cpl" placeholder="Ej: 2000">
+                    </div>
+                    <div class="hint"><span>Si no sabes, déjalo vacío.</span></div>
+                </div>
+            </div>
+
+            <div id="inputs-ecom" class="hidden">
+                <div class="input-group">
+                    <label>Tasa de Conversión Web (%)</label>
+                    <input type="number" id="conv_rate" placeholder="Ej: 1.5">
+                    <div class="hint"><span>Promedio E-com: 1% - 3%</span></div>
+                </div>
+                <div class="input-group">
+                    <label>ROAS Actual (Opcional)</label>
+                    <input type="number" id="roas" placeholder="Ej: 3.0">
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <button class="btn-calculate" onclick="calculate()">Generar Auditoría Completa 🔥</button>
+
+    <div id="results-area">
+        
+        <div class="score-banner" id="score-box">
+            <div class="score-text">
+                <h3 id="diag-title">ANALIZANDO...</h3>
+                <p id="diag-desc">...</p>
+            </div>
+            <div class="score-number" id="diag-val">--</div>
+        </div>
+
+        <div class="kpi-container">
+            <div class="kpi-box main">
+                <div class="kpi-label">Presupuesto Sugerido</div>
+                <div class="kpi-value highlight" id="res-invest">$0</div>
+                <div class="kpi-label" style="margin-top:5px; color:#fff">Para meta de <span id="res-goal-txt"></span></div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label" id="lbl-max-cost">CPL MÁXIMO</div>
+                <div class="kpi-value" id="res-max" style="color:var(--danger)">$0</div>
+                <div class="kpi-label">Punto de Quiebre</div>
+            </div>
+            <div class="kpi-box">
+                <div class="kpi-label">Utilidad Neta Est.</div>
+                <div class="kpi-value" id="res-net">$0</div>
+                <div class="kpi-label">Bolsillo (Post-Todo)</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">📈 Proyección de Escenarios (Contexto Amplio)</span>
+            </div>
+            <div class="table-container">
+                <table id="scenario-table">
+                    <thead>
+                        <tr>
+                            <th>Escenario</th>
+                            <th>Métrica Clave</th>
+                            <th>Inversión</th>
+                            <th>Neto Final</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+            <div class="hint" style="text-align:center; margin-top:15px; font-size:0.8rem">
+                * Neto Final = Ganancia Bruta - Inversión Ads - Costos Fijos.
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>Herramienta Oficial v14.0 | <strong>Manu Meta Ads</strong></p>
+    </footer>
+</div>
+
+<script>
+    // --- LÓGICA DEL NEGOCIO ---
+    let MODE = 'leads';
+    const $ = id => document.getElementById(id);
+    const val = id => parseFloat($(id).value) || 0;
+    const fmt = n => "$" + Math.floor(n).toLocaleString('es-ES');
+
+    function setMode(m) {
+        MODE = m;
+        // UI Toggles
+        $('inputs-leads').classList.toggle('hidden', m !== 'leads');
+        $('inputs-ecom').classList.toggle('hidden', m !== 'ecom');
+        
+        $('lbl-max-cost').innerText = m === 'leads' ? 'CPL MÁXIMO (BE)' : 'CPA MÁXIMO (BE)';
+        
+        // Tab Styles
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        $('results-area').style.display = 'none';
+    }
+
+    function calculate() {
+        // 1. Recolección de Datos
+        const TICKET = val('ticket');
+        const COGS = val('cogs'); // Costo variable
+        const FIXED = val('fixed');
+        const GOAL = val('goal');
+
+        if (!TICKET || !GOAL) return alert("Por favor ingresa Ticket y Meta de Facturación.");
+        
+        const MARGIN_UNIT = TICKET - COGS; // Margen de Contribución
+        if (MARGIN_UNIT <= 0) return alert("Error: El costo supera el precio de venta.");
+
+        let salesNeeded = Math.ceil(GOAL / TICKET);
+        let invest = 0, limitCost = 0, projectedNet = 0;
+        let baseMetric = 0; // CPL or ROAS used for calculation
+
+        // 2. Cálculos según Modo
+        if (MODE === 'leads') {
+            let rate = val('close_rate') / 100 || 0.1; // Default 10%
+            let userCpl = val('cpl');
+            
+            let leadsNeeded = Math.ceil(salesNeeded / rate);
+            limitCost = MARGIN_UNIT * rate; // Break-even CPL
+            
+            // Lógica de "Super Code": Si no hay CPL, calculamos uno SALUDABLE (40% del margen disponible)
+            let targetCpl = userCpl > 0 ? userCpl : (limitCost * 0.4); 
+            baseMetric = targetCpl; // Guardamos para escenarios
+            
+            invest = leadsNeeded * targetCpl;
+
+        } else { // E-Commerce
+            let conv = val('conv_rate') / 100 || 0.015; // Default 1.5%
+            let userRoas = val('roas');
+            
+            limitCost = MARGIN_UNIT; // Break-even CPA
+            let breakEvenROAS = TICKET / MARGIN_UNIT; // ROAS mínimo para cubrir producto
+            
+            // Target ROAS debe ser mayor para cubrir Fijos.
+            // Si no hay ROAS usuario, sugerimos BreakEven + 50% de buffer
+            let targetRoasCalc = userRoas > 0 ? userRoas : Math.max(breakEvenROAS * 1.5, 2.0);
+            baseMetric = targetRoasCalc;
+
+            invest = GOAL / targetRoasCalc;
+        }
+
+        // 3. Resultado Financiero Base
+        let grossProfit = salesNeeded * MARGIN_UNIT;
+        projectedNet = grossProfit - invest - FIXED;
+
+        // 4. Diagnóstico Inteligente
+        let score = 100;
+        let title = "NEGOCIO SALUDABLE";
+        let desc = "Tu estructura de costos permite escalar.";
+        let color = "var(--success)";
+        let borderCls = "2px solid var(--success)";
+
+        if (projectedNet < 0) {
+            score = 0; title = "NO VIABLE ACTUALMENTE"; 
+            desc = "Los costos fijos + publicidad superan la ganancia bruta."; 
+            color = "var(--danger)"; borderCls = "2px solid var(--danger)";
+        } else if (projectedNet < FIXED * 0.2) {
+            score = 45; title = "RIESGO ALTO"; 
+            desc = "Margen neto muy ajustado. Cualquier error generará pérdidas."; 
+            color = "var(--warning)"; borderCls = "2px solid var(--warning)";
+        }
+
+        // 5. Renderizado UI Principal
+        $('diag-title').innerText = title;
+        $('diag-desc').innerText = desc;
+        $('diag-val').innerText = score + "/100";
+        $('score-box').style.borderLeft = borderCls;
+        $('diag-val').style.color = color;
+
+        $('res-invest').innerText = fmt(invest);
+        $('res-goal-txt').innerText = fmt(GOAL);
+        $('res-max').innerText = fmt(limitCost);
+        $('res-net').innerText = fmt(projectedNet);
+        $('res-net').style.color = projectedNet > 0 ? 'var(--success)' : 'var(--danger)';
+
+        // 6. Generación de Escenarios (La parte "Broad Context")
+        const tbody = $('scenario-table').querySelector('tbody');
+        tbody.innerHTML = "";
+
+        let scenarios = [];
+
+        if (MODE === 'leads') {
+            // Escenarios basados en variaciones de CPL
+            scenarios = [
+                { name: "Pesimista (CPL Alto)", metric: baseMetric * 1.3, label: fmt(baseMetric*1.3) + "/lead" },
+                { name: "Objetivo (Realista)", metric: baseMetric, label: fmt(baseMetric) + "/lead" },
+                { name: "Optimista (Eficiente)", metric: baseMetric * 0.8, label: fmt(baseMetric*0.8) + "/lead" }
+            ];
+        } else {
+            // Escenarios basados en variaciones de ROAS
+            let beRoas = TICKET/MARGIN_UNIT;
+            scenarios = [
+                { name: "Mínimo (Supervivencia)", metric: beRoas * 1.1, label: (beRoas*1.1).toFixed(2)+"x ROAS" },
+                { name: "Objetivo (Crecimiento)", metric: baseMetric, label: baseMetric.toFixed(2)+"x ROAS" },
+                { name: "Escala (Volumen Alto)", metric: baseMetric * 0.9, label: (baseMetric*0.9).toFixed(2)+"x ROAS" } 
+                // Nota: Al escalar agresivamente, el ROAS suele bajar un poco, pero la utilidad neta sube por volumen.
+            ];
+        }
+
+        scenarios.forEach(sc => {
+            let s_invest = 0;
+            if (MODE === 'leads') {
+                let s_leads = Math.ceil(salesNeeded / (val('close_rate')/100||0.1));
+                s_invest = s_leads * sc.metric;
+            } else {
+                s_invest = GOAL / sc.metric;
+            }
+
+            let s_net = (salesNeeded * MARGIN_UNIT) - s_invest - FIXED;
+            let badgeClass = s_net > 0 ? "st-ok" : "st-bad";
+            let badgeText = s_net > 0 ? "RENTABLE" : "PÉRDIDA";
+
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${sc.name}</strong></td>
+                    <td>${sc.label}</td>
+                    <td>${fmt(s_invest)}</td>
+                    <td style="color:${s_net>0?'var(--success)':'var(--danger)'}; font-weight:bold;">${fmt(s_net)}</td>
+                    <td><span class="status-badge ${badgeClass}">${badgeText}</span></td>
+                </tr>
+            `;
+        });
+
+        $('results-area').style.display = 'block';
+    }
+</script>
+
+</body>
+</html>
