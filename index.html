@@ -3,668 +3,559 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora Financiera | Manu Meta Ads</title>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+<title>Calculadora de Rentabilidad | Manu Meta Ads</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600;700&display=swap" rel="stylesheet">
 <style>
-    /* --- SISTEMA DE DISEÑO --- */
+    /* --- DISEÑO VISUAL --- */
     :root {
-        --primary: #FF9F1C;       /* Naranja Normal (Vibrante) */
-        --primary-soft: rgba(255, 159, 28, 0.15);
-        --bg-deep: #080808;       /* Negro Profundo */
-        --bg-card: #141414;       /* Panel */
-        --bg-input: #1F1F1F;
-        --border: #2E2E2E;
-        --text: #FFFFFF;
-        --text-sub: #909090;
+        --primary: #FF9F1C;       /* Naranja Tech */
+        --primary-dim: rgba(255, 159, 28, 0.1);
+        --bg-body: #050505;       /* Negro Profundo */
+        --bg-card: #111111;       /* Panel */
+        --bg-input: #1A1A1A;
+        --border: #2A2A2A;
+        --text-main: #FFFFFF;
+        --text-muted: #888888;
         
-        --profit: #2ECC71;        /* Verde Éxito */
-        --risk: #FFC107;          /* Amarillo Riesgo */
-        --loss: #FF4757;          /* Rojo Pérdida */
-        
-        --radius: 16px;
-        --shadow: 0 10px 40px rgba(0,0,0,0.6);
+        --profit: #00E676;        /* Verde Rentable */
+        --warn: #FFC400;          /* Amarillo Riesgo */
+        --loss: #FF3D00;          /* Rojo Pérdida */
     }
 
-    * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+    * { box-sizing: border-box; outline: none; }
 
     body {
-        background-color: var(--bg-deep);
-        color: var(--text);
-        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        font-family: 'Space Grotesk', sans-serif;
         margin: 0; padding: 0;
         font-size: 15px;
-        line-height: 1.6;
-        background-image: radial-gradient(circle at 50% 0%, #1a1005 0%, #080808 60%);
+        line-height: 1.5;
+        background-image: radial-gradient(circle at 50% 0%, #1a1205 0%, #000 60%);
+        min-height: 100vh;
     }
 
-    .app-wrapper {
-        max-width: 1000px;
+    .app-container {
+        max-width: 900px;
         margin: 0 auto;
         padding: 40px 20px 100px;
     }
 
-    /* --- ENCABEZADO --- */
+    /* HEADER */
     header {
         text-align: center;
-        margin-bottom: 50px;
+        margin-bottom: 40px;
+        border-bottom: 1px solid var(--border);
+        padding-bottom: 20px;
     }
     
     .brand {
-        font-weight: 800;
-        font-size: 1.8rem;
+        font-weight: 700;
+        font-size: 1.5rem;
         letter-spacing: -0.5px;
         text-transform: uppercase;
         margin: 0;
-        background: linear-gradient(180deg, #fff, #ccc);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
     }
-    .brand span { 
-        color: var(--primary); 
-        background: none; 
-        -webkit-text-fill-color: var(--primary);
-    }
-    
-    .subtitle {
-        color: var(--text-sub);
-        font-size: 0.9rem;
-        font-weight: 500;
-        margin-top: 8px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
+    .brand span { color: var(--primary); }
+    .tagline { color: var(--text-muted); font-size: 0.85rem; margin-top: 5px; }
 
-    /* --- CONTROLES DE NAVEGACIÓN --- */
-    .mode-switch {
+    /* TABS */
+    .tabs {
         display: flex;
         background: var(--bg-card);
         padding: 6px;
         border-radius: 12px;
         border: 1px solid var(--border);
         margin-bottom: 30px;
-        position: relative;
     }
     
-    .mode-btn {
+    .tab-btn {
         flex: 1;
         padding: 14px;
-        border: none;
         background: transparent;
-        color: var(--text-sub);
-        font-weight: 700;
+        border: none;
+        color: var(--text-muted);
+        font-weight: 600;
         font-size: 0.9rem;
         cursor: pointer;
         border-radius: 8px;
-        transition: all 0.3s;
-        text-transform: uppercase;
+        transition: 0.3s;
     }
     
-    .mode-btn.active {
+    .tab-btn.active {
         background: var(--primary);
         color: #000;
-        box-shadow: 0 4px 20px rgba(255, 159, 28, 0.3);
+        box-shadow: 0 4px 20px rgba(255, 159, 28, 0.2);
     }
 
-    /* --- GRID DE ENTRADAS --- */
-    .input-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 20px;
-    }
-
+    /* GRID & CARDS */
+    .grid { display: grid; gap: 20px; }
+    .grid-2 { grid-template-columns: 1fr 1fr; }
+    
     .card {
         background: var(--bg-card);
         border: 1px solid var(--border);
-        border-radius: var(--radius);
+        border-radius: 16px;
         padding: 25px;
-        transition: 0.3s;
         height: 100%;
-        display: flex;
-        flex-direction: column;
     }
     
-    .card:hover { border-color: #444; }
-
     .card-head {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 25px;
-        padding-bottom: 15px;
+        margin-bottom: 20px;
         border-bottom: 1px solid var(--border);
-    }
-    
-    .card-icon {
-        width: 32px; height: 32px;
-        background: var(--primary-soft);
+        padding-bottom: 10px;
         color: var(--primary);
-        border-radius: 8px;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 1.1rem;
-    }
-    
-    .card-title {
         font-weight: 700;
-        font-size: 0.9rem;
+        font-size: 0.85rem;
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #fff;
+        letter-spacing: 1px;
     }
 
-    /* --- CAMPOS --- */
+    /* INPUTS */
     .field { margin-bottom: 18px; }
-    
-    .field label {
-        display: block;
-        font-size: 0.75rem;
-        color: var(--text-sub);
-        margin-bottom: 8px;
-        font-weight: 600;
-        text-transform: uppercase;
-    }
+    label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; }
     
     .input-wrap { position: relative; }
-    
-    .input-wrap span {
-        position: absolute;
-        left: 14px;
-        top: 50%;
-        transform: translateY(-50%);
-        color: #666;
-        font-family: monospace;
-        font-size: 1.1rem;
+    .symbol {
+        position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+        color: #555; font-family: monospace; font-size: 1.1rem;
     }
     
     input, select {
-        width: 100%;
-        padding: 14px 14px 14px 35px;
-        background: var(--bg-input);
-        border: 1px solid var(--border);
-        color: #fff;
-        border-radius: 8px;
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        font-size: 1rem;
-        font-weight: 500;
-        transition: 0.2s;
+        width: 100%; padding: 14px 14px 14px 35px;
+        background: var(--bg-input); border: 1px solid var(--border);
+        color: #fff; border-radius: 8px; font-size: 1rem;
+        font-family: 'Space Grotesk', sans-serif; transition: 0.2s;
     }
     select { padding-left: 14px; cursor: pointer; }
-    input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-soft); }
+    input:focus, select:focus { border-color: var(--primary); outline: none; }
     
-    .hint {
-        font-size: 0.75rem;
-        color: #555;
-        margin-top: 6px;
-        display: flex;
-        justify-content: space-between;
-    }
+    .hint { font-size: 0.7rem; color: #555; margin-top: 4px; display: flex; justify-content: space-between; }
 
-    /* --- TOGGLE AVANZADO --- */
-    .advanced-toggle {
+    /* ACTION BUTTON */
+    .btn-main {
+        width: 100%; padding: 22px; margin-top: 20px;
+        background: var(--primary); color: #000;
+        font-weight: 700; font-size: 1.1rem; text-transform: uppercase;
+        border: none; border-radius: 12px; cursor: pointer;
+        transition: transform 0.1s;
+    }
+    .btn-main:active { transform: scale(0.98); }
+
+    /* RESULTADOS */
+    #results-panel { display: none; margin-top: 50px; animation: slideUp 0.5s ease; }
+    @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    /* DIAGNÓSTICO */
+    .diagnosis-card {
+        padding: 25px; border-radius: 12px; margin-bottom: 25px;
+        background: rgba(255,255,255,0.03); border: 1px solid transparent;
         text-align: center;
-        margin: 20px 0;
-        cursor: pointer;
-        color: var(--text-sub);
-        font-size: 0.8rem;
-        text-decoration: underline;
     }
-
-    /* --- BOTÓN --- */
-    .btn-action {
-        width: 100%;
-        padding: 22px;
-        margin-top: 30px;
-        background: linear-gradient(135deg, var(--primary) 0%, #FF8C00 100%);
-        color: #000;
-        font-weight: 800;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-        border: none;
-        border-radius: 12px;
-        cursor: pointer;
-        box-shadow: 0 10px 30px rgba(255, 159, 28, 0.25);
-        transition: transform 0.2s;
-    }
-    .btn-action:hover { transform: translateY(-2px); box-shadow: 0 15px 40px rgba(255, 159, 28, 0.4); }
-
-    /* --- RESULTADOS --- */
-    #results-panel { display: none; margin-top: 50px; animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
-    @keyframes fadeUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-
-    /* SCORECARD */
-    .score-card {
-        background: linear-gradient(90deg, #111 0%, #080808 100%);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 30px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 30px;
-        position: relative;
-        overflow: hidden;
-    }
-    .score-card::before {
-        content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px;
-        background: var(--text-sub); border-radius: 4px 0 0 4px;
-        id: "score-bar";
-    }
+    .diag-title { font-size: 1.4rem; font-weight: 700; margin: 0 0 5px; }
+    .diag-desc { color: var(--text-muted); font-size: 0.95rem; max-width: 600px; margin: 0 auto; }
     
-    .score-info h3 { margin: 0; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; }
-    .score-info p { margin: 8px 0 0; color: var(--text-sub); font-size: 0.95rem; max-width: 500px; }
-    .score-val { font-size: 3rem; font-weight: 900; color: #fff; }
+    .status-ok { border-color: var(--profit); background: rgba(0, 230, 118, 0.05); }
+    .status-ok .diag-title { color: var(--profit); }
+    
+    .status-warn { border-color: var(--warn); background: rgba(255, 196, 0, 0.05); }
+    .status-warn .diag-title { color: var(--warn); }
+    
+    .status-bad { border-color: var(--loss); background: rgba(255, 61, 0, 0.05); }
+    .status-bad .diag-title { color: var(--loss); }
 
     /* KPI DASHBOARD */
-    .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        margin-bottom: 30px;
-    }
+    .kpi-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
     
     .kpi-tile {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 20px;
-        text-align: center;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
+        background: var(--bg-card); border: 1px solid var(--border);
+        border-radius: 12px; padding: 20px; text-align: center;
+        display: flex; flex-direction: column; justify-content: center;
     }
-    .kpi-tile.hero {
-        background: radial-gradient(circle at top, rgba(255, 159, 28, 0.1), transparent);
-        border-color: rgba(255, 159, 28, 0.3);
-        grid-column: span 1; 
+    .kpi-tile.main {
+        background: radial-gradient(circle at top, rgba(255,159,28,0.1), transparent);
+        border-color: rgba(255,159,28,0.3);
     }
     
-    .kpi-lbl { font-size: 0.7rem; color: var(--text-sub); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
-    .kpi-num { font-size: 1.8rem; font-weight: 800; color: #fff; margin: 10px 0; }
-    .kpi-num.xl { font-size: 2.2rem; color: var(--primary); }
+    .kpi-lbl { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px; }
+    .kpi-val { font-size: 1.8rem; font-weight: 700; color: #fff; margin: 8px 0; }
+    .kpi-val.xl { font-size: 2.4rem; color: var(--primary); }
     .kpi-sub { font-size: 0.75rem; color: #555; }
 
-    /* PROYECCIÓN VISUAL (BARRAS) */
-    .scenarios-card {
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 30px;
-        overflow: hidden;
+    /* EXPLICACIÓN DETALLADA */
+    .insights {
+        background: #0f0f0f; border-left: 4px solid var(--text-muted);
+        padding: 20px; border-radius: 0 8px 8px 0; margin-top: 30px;
+        font-size: 0.9rem; color: #ccc;
     }
-    
-    .scenario-row {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1fr 1fr;
-        align-items: center;
-        padding: 15px 0;
-        border-bottom: 1px solid #222;
-        font-size: 0.9rem;
-    }
-    .scenario-row:last-child { border-bottom: none; }
-    .sc-head { font-weight: bold; text-transform: uppercase; color: var(--text-sub); font-size: 0.7rem; letter-spacing: 1px; }
-    
-    .bar-container {
-        height: 6px; background: #222; border-radius: 3px; margin-top: 8px; width: 100%; position: relative;
-    }
-    .bar-fill {
-        height: 100%; border-radius: 3px; width: 0%; transition: width 1s ease;
-    }
+    .insights strong { color: #fff; }
 
-    .profit-positive { color: var(--profit); }
-    .profit-negative { color: var(--loss); }
-
-    footer { text-align: center; margin-top: 80px; font-size: 0.8rem; color: #444; }
+    /* TABLE */
+    .table-responsive { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+    table { width: 100%; border-collapse: collapse; min-width: 600px; background: var(--bg-card); }
+    th { text-align: left; padding: 15px; background: #080808; color: var(--text-muted); font-size: 0.7rem; text-transform: uppercase; }
+    td { padding: 15px; border-bottom: 1px solid #222; font-size: 0.9rem; }
+    tr:last-child td { border: none; }
+    
+    footer { text-align: center; margin-top: 60px; color: #444; font-size: 0.8rem; }
     .hidden { display: none; }
 
-    @media(max-width: 800px) {
-        .kpi-grid { grid-template-columns: 1fr; }
-        .score-card { flex-direction: column; text-align: center; gap: 20px; }
-        .score-card::before { width: 100%; height: 6px; top: 0; left: 0; bottom: auto; border-radius: 4px 4px 0 0; }
-        .scenario-row { grid-template-columns: 1fr; gap: 10px; padding: 20px 0; text-align: center; }
+    @media(max-width: 768px) {
+        .grid-2 { grid-template-columns: 1fr; }
+        .kpi-row { grid-template-columns: 1fr; }
     }
 </style>
 </head>
 <body>
 
-<div class="app-wrapper">
+<div class="app-container">
     <header>
         <h1 class="brand">MANU <span>| META ADS</span></h1>
-        <div class="subtitle">Calculadora Financiera & Proyección de Escala</div>
+        <div class="tagline">CALCULADORA DE RENTABILIDAD & ESCALA</div>
     </header>
 
-    <div class="mode-switch">
-        <button class="mode-btn active" onclick="switchMode('leads')">💼 Servicios / WhatsApp</button>
-        <button class="mode-btn" onclick="switchMode('ecom')">🛒 E-Commerce / Web</button>
+    <div class="tabs">
+        <button class="tab-btn active" onclick="setMode('leads')">💼 Servicios (Leads/WhatsApp)</button>
+        <button class="tab-btn" onclick="setMode('ecom')">🛒 E-Commerce (Venta Directa)</button>
     </div>
 
-    <div class="input-grid">
+    <div class="grid grid-2">
         
         <div class="card">
-            <div class="card-head">
-                <div class="card-icon">📊</div>
-                <div class="card-title">1. Estructura del Negocio</div>
-            </div>
-
+            <div class="card-head">1. Estructura del Negocio</div>
+            
             <div class="field">
-                <label>Ticket Promedio (Valor Venta)</label>
+                <label>Ticket Promedio (Valor de Venta)</label>
                 <div class="input-wrap">
-                    <span>$</span>
+                    <span class="symbol">$</span>
                     <input type="number" id="ticket" placeholder="Ej: 50000">
                 </div>
             </div>
 
             <div class="field">
-                <label>Costo Variable (Prod + Envío)</label>
+                <label>Costo Variable (Prod + Envío + Fees)</label>
                 <div class="input-wrap">
-                    <span>$</span>
+                    <span class="symbol">$</span>
                     <input type="number" id="cogs" placeholder="Ej: 20000">
                 </div>
-                <div class="hint"><span>Costos directos por cada venta.</span></div>
+                <div class="hint"><span>Costo directo de cada venta entregada.</span></div>
             </div>
 
             <div class="field">
                 <label>Gastos Fijos Mensuales</label>
                 <div class="input-wrap">
-                    <span>$</span>
+                    <span class="symbol">$</span>
                     <input type="number" id="fixed" placeholder="Ej: 500000">
                 </div>
-                <div class="hint"><span>Sueldos, luz, software, local.</span></div>
+                <div class="hint"><span>Sueldos, luz, agencia, software.</span></div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-head">
-                <div class="card-icon">🎯</div>
-                <div class="card-title">2. Metas & Métricas</div>
-            </div>
-
+            <div class="card-head">2. Proyecciones</div>
+            
             <div class="field">
                 <label>Meta de Facturación Mensual</label>
                 <div class="input-wrap">
-                    <span>$</span>
+                    <span class="symbol">$</span>
                     <input type="number" id="goal" placeholder="Ej: 5000000">
                 </div>
             </div>
 
             <div id="inp-leads">
                 <div class="field">
-                    <label>Tasa de Cierre Ventas (%)</label>
+                    <label>Tasa de Cierre de Ventas (%)</label>
                     <input type="number" id="close_rate" placeholder="Ej: 10">
-                    <div class="hint"><span>De 100 leads, ¿cuántos pagan?</span></div>
+                    <div class="hint"><span>¿De 100 chats, cuántos compran?</span></div>
                 </div>
                 <div class="field">
-                    <label>Costo x Lead Actual (CPL)</label>
-                    <div class="input-wrap"><span>$</span><input type="number" id="cpl" placeholder="(Opcional)"></div>
+                    <label>Costo por Lead Actual (CPL)</label>
+                    <div class="input-wrap">
+                        <span class="symbol">$</span>
+                        <input type="number" id="cpl" placeholder="(Opcional)">
+                    </div>
+                    <div class="hint"><span>Si no tienes, calcularemos uno ideal.</span></div>
                 </div>
             </div>
 
             <div id="inp-ecom" class="hidden">
                 <div class="field">
-                    <label>Tasa Conversión Web (%)</label>
+                    <label>Tasa de Conversión Web (%)</label>
                     <input type="number" id="conv_rate" placeholder="Ej: 1.5">
                 </div>
                 <div class="field">
-                    <label>ROAS Actual</label>
+                    <label>ROAS Actual (Retorno)</label>
                     <input type="number" id="roas" placeholder="(Opcional)">
                 </div>
             </div>
         </div>
-
-        <div class="card">
-            <div class="card-head">
-                <div class="card-icon">🛡️</div>
-                <div class="card-title">3. Costos Ocultos (Avanzado)</div>
-            </div>
-            
-            <div class="field">
-                <label>Impuestos Pauta Digital (%)</label>
-                <input type="number" id="tax_ads" placeholder="Ej: 19 (IVA)">
-                <div class="hint"><span>Impuesto que cobra el gobierno sobre ads.</span></div>
-            </div>
-
-            <div class="field">
-                <label>Fee Agencia / Trafficker ($)</label>
-                <div class="input-wrap">
-                    <span>$</span>
-                    <input type="number" id="fee_agency" placeholder="Ej: 200000">
-                </div>
-                <div class="hint"><span>Pago mensual a quien gestiona los ads.</span></div>
-            </div>
-        </div>
-
     </div>
 
-    <button class="btn-action" onclick="audit()">Auditar Rentabilidad & Proyectar Escala</button>
+    <button class="btn-main" onclick="calc()">Auditar Negocio 🔥</button>
 
     <div id="results-panel">
         
-        <div class="score-card" id="score-card">
-            <div class="score-info">
-                <h3 id="sc-title">ANALIZANDO...</h3>
-                <p id="sc-desc">...</p>
-            </div>
-            <div class="score-val" id="sc-val">--/100</div>
+        <div id="diag-box" class="diagnosis-card">
+            <div class="diag-title" id="diag-title">...</div>
+            <div class="diag-desc" id="diag-desc">...</div>
         </div>
 
-        <div class="kpi-grid">
-            <div class="kpi-tile hero">
-                <div class="kpi-lbl">Presupuesto Ads Sugerido</div>
-                <div class="kpi-num xl" id="kpi-invest">$0</div>
-                <div class="kpi-sub">Para facturar <span id="kpi-goal-txt"></span></div>
+        <div class="kpi-row">
+            <div class="kpi-tile main">
+                <div class="kpi-lbl">Inversión para Meta</div>
+                <div class="kpi-val xl" id="res-inv">$0</div>
+                <div class="kpi-sub">Presupuesto Sugerido</div>
             </div>
             <div class="kpi-tile">
-                <div class="kpi-lbl" id="lbl-max">CPL MÁXIMO</div>
-                <div class="kpi-num" id="kpi-limit" style="color:var(--loss)">$0</div>
-                <div class="kpi-sub">Punto de Quiebre (Break-Even)</div>
+                <div class="kpi-lbl" style="color:var(--loss)">Inversión Mínima</div>
+                <div class="kpi-val" id="res-min" style="color:var(--loss)">$0</div>
+                <div class="kpi-sub">Solo para cubrir costos (Sobrevivir)</div>
             </div>
             <div class="kpi-tile">
-                <div class="kpi-lbl">ROI Proyectado</div>
-                <div class="kpi-num" id="kpi-roi" style="color:var(--profit)">0%</div>
-                <div class="kpi-sub">Retorno Neto sobre Inversión</div>
+                <div class="kpi-lbl">Métrica Límite</div>
+                <div class="kpi-val" id="res-limit">$0</div>
+                <div class="kpi-sub" id="lbl-limit">CPL Máximo</div>
             </div>
-            
-            <div class="kpi-tile">
-                <div class="kpi-lbl">Utilidad Neta</div>
-                <div class="kpi-num" id="kpi-net">$0</div>
-                <div class="kpi-sub">Ganancia Real (Bolsillo)</div>
-            </div>
+        </div>
+
+        <div class="kpi-row">
             <div class="kpi-tile">
                 <div class="kpi-lbl">Volumen Necesario</div>
-                <div class="kpi-num" id="kpi-vol">0</div>
-                <div class="kpi-sub" id="lbl-vol">Leads / Clics</div>
+                <div class="kpi-val" id="res-vol">0</div>
+                <div class="kpi-sub">Leads / Clics</div>
             </div>
             <div class="kpi-tile">
                 <div class="kpi-lbl">Métrica Objetivo</div>
-                <div class="kpi-num" id="kpi-target" style="color:var(--primary)">0</div>
-                <div class="kpi-sub">Objetivo para ser Rentable</div>
+                <div class="kpi-val" id="res-target" style="color:var(--primary)">0</div>
+                <div class="kpi-sub">Para ser Rentable</div>
+            </div>
+            <div class="kpi-tile">
+                <div class="kpi-lbl">Utilidad Neta Est.</div>
+                <div class="kpi-val" id="res-net">$0</div>
+                <div class="kpi-sub">Ganancia Real</div>
             </div>
         </div>
 
-        <div class="scenarios-card">
-            <div class="card-head" style="border:none; margin-bottom:10px;">
-                <div class="card-icon" style="background:var(--bg-deep)">📈</div>
-                <div class="card-title" style="color:var(--text)">Análisis de Escenarios (Riesgo vs. Escala)</div>
+        <div class="card" style="margin-top:30px;">
+            <div class="card-head">📈 Proyecciones & Sensibilidad</div>
+            <div class="table-responsive">
+                <table id="sc-table">
+                    <thead>
+                        <tr>
+                            <th>Escenario</th>
+                            <th>Eficiencia (CPL/ROAS)</th>
+                            <th>Inversión</th>
+                            <th>Neto Final</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
             </div>
-            
-            <div class="scenario-row">
-                <div class="sc-head">ESCENARIO</div>
-                <div class="sc-head">INVERSIÓN ADS</div>
-                <div class="sc-head">NETO FINAL</div>
-                <div class="sc-head">RENTABILIDAD</div>
-            </div>
-            <div id="scenario-body"></div>
         </div>
+
+        <div class="insights" id="insights-txt"></div>
 
     </div>
 
     <footer>
-        <p>Potenciado por <strong>Manu Meta Ads</strong> | Tecnología Financiera para Traffickers</p>
+        <p>Herramienta Oficial | <strong>MANU META ADS</strong></p>
     </footer>
 </div>
 
 <script>
-    // --- LÓGICA FINANCIERA AVANZADA ---
+    // --- LÓGICA DE NEGOCIO ---
     let MODE = 'leads';
     const $ = id => document.getElementById(id);
     const val = id => parseFloat($(id).value) || 0;
     const fmt = n => "$" + Math.floor(n).toLocaleString('es-ES');
 
-    function switchMode(m) {
+    function setMode(m) {
         MODE = m;
         $('inp-leads').classList.toggle('hidden', m !== 'leads');
         $('inp-ecom').classList.toggle('hidden', m !== 'ecom');
         
-        $('lbl-max').innerText = m === 'leads' ? 'CPL MÁXIMO (BE)' : 'CPA MÁXIMO (BE)';
-        $('lbl-vol').innerText = m === 'leads' ? 'Leads Mensuales' : 'Tráfico Web';
+        $('lbl-limit').innerText = m === 'leads' ? 'CPL Máximo (Pérdida)' : 'CPA Máximo (Pérdida)';
         
-        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         event.target.classList.add('active');
         $('results-panel').style.display = 'none';
     }
 
-    function audit() {
-        // 1. INPUTS
+    function calc() {
         const TICKET = val('ticket');
         const COGS = val('cogs');
-        const FIXED = val('fixed'); // Fijos Operativos
-        const FEE_AGENCY = val('fee_agency'); // Costo Oculto 1
-        const TAX_ADS = val('tax_ads') / 100; // Costo Oculto 2 (Ej: 0.19)
+        const FIXED = val('fixed');
         const GOAL = val('goal');
 
-        if(!TICKET || !GOAL) return alert("Ingresa al menos Ticket y Meta.");
+        if (!TICKET || !GOAL) return alert("Por favor ingresa Ticket y Meta.");
         
+        // 1. Economía Unitaria
         const MARGIN_UNIT = TICKET - COGS;
-        if(MARGIN_UNIT <= 0) return alert("ERROR: Costo variable supera precio de venta.");
+        if (MARGIN_UNIT <= 0) return alert("ERROR: El costo variable supera el precio. No hay margen.");
 
-        // 2. CÁLCULOS BASE
+        // 2. Cálculos Base
         let salesNeeded = Math.ceil(GOAL / TICKET);
-        let invest = 0, limitCost = 0, traffic = 0, targetMetric = 0;
-        let baseCost = 0; // CPL or CPA used
+        
+        let investTarget = 0;   // Inversión para Meta
+        let investMin = 0;      // Inversión para Sobrevivir (Cubrir Fijos)
+        let metricTarget = 0;   // CPL/ROAS Objetivo
+        let metricLimit = 0;    // CPL/ROAS Límite
+        let volume = 0;
 
         if (MODE === 'leads') {
             let rate = val('close_rate') / 100 || 0.1;
             let userCpl = val('cpl');
             
-            traffic = Math.ceil(salesNeeded / rate); // Leads
-            limitCost = MARGIN_UNIT * rate; // Break-even CPL (Operativo)
+            volume = Math.ceil(salesNeeded / rate);
+            metricLimit = MARGIN_UNIT * rate; // CPL de Quiebre Operativo (Sin Fijos)
             
-            // Lógica Experta: CPL Objetivo = 30-40% del margen máximo para ser saludable
-            baseCost = userCpl > 0 ? userCpl : (limitCost * 0.35); 
-            invest = traffic * baseCost;
-            targetMetric = baseCost; // CPL Target
+            // CPL Real Límite (Considerando Fijos):
+            // Ganancia Bruta = Fijos + Ads. -> Ads = Ganancia - Fijos.
+            // Max Spend = (Sales * Margin) - Fixed.
+            let maxSpendAvailable = (salesNeeded * MARGIN_UNIT) - FIXED;
+            let absoluteMaxCpl = maxSpendAvailable / volume;
 
-        } else { // Ecom
+            // Target CPL: Si no hay usuario, usamos uno sano (40% del margen operativo)
+            metricTarget = userCpl > 0 ? userCpl : (metricLimit * 0.4);
+            
+            investTarget = volume * metricTarget;
+            
+            // Inversión Mínima (Break Even Total): 
+            // Ventas Mínimas = Fijos / (MarginUnit - TargetCPL_unit_cost)
+            // Profit per Sale = MarginUnit - (TargetCPL / Rate)
+            let profitPerSale = MARGIN_UNIT - (metricTarget / rate);
+            
+            if (profitPerSale > 0) {
+                let minSales = Math.ceil(FIXED / profitPerSale);
+                investMin = (minSales / rate) * metricTarget;
+            } else {
+                investMin = 999999999; // Imposible recuperar
+            }
+
+        } else { // ECOM
             let conv = val('conv_rate') / 100 || 0.015;
             let userRoas = val('roas');
             
-            limitCost = MARGIN_UNIT; // Max CPA
-            traffic = Math.ceil(salesNeeded / conv); // Clicks
+            metricLimit = MARGIN_UNIT; // Max CPA Operativo
+            let beRoasProduct = TICKET / MARGIN_UNIT; // ROAS Break Even Producto
             
-            // ROAS Break Even REAL (incluyendo impuestos de pauta en el denominador mentalmente)
-            // BE ROAS = Precio / Margen
-            let beRoas = TICKET / MARGIN_UNIT;
+            // Target ROAS para cubrir Fijos:
+            // (Sales * Ticket) / ROAS = CostoAds.
+            // (Sales * Margin) - CostoAds - Fixed = 0 -> CostoAds = Gross - Fixed.
+            // TargetROAS_BE = GOAL / (Gross - Fixed).
             
-            // Target ROAS = BE * Buffer (para cubrir fijos y agencia)
-            let targetRoas = userRoas > 0 ? userRoas : Math.max(beRoas * 1.8, 2.5);
-            baseCost = targetRoas; // ROAS Target
-            invest = GOAL / targetRoas;
+            let grossTotal = salesNeeded * MARGIN_UNIT;
+            let maxAdsBudget = grossTotal - FIXED;
+            
+            let beRoasTotal = maxAdsBudget > 0 ? (GOAL / maxAdsBudget) : 99; // ROAS para salir tablas totales
+            
+            // Target
+            metricTarget = userRoas > 0 ? userRoas : Math.max(beRoasProduct * 2, beRoasTotal * 1.2);
+            
+            investTarget = GOAL / metricTarget;
+            volume = Math.ceil(salesNeeded / conv); // Clicks
+            
+            // Min Invest to cover fixed
+            // Profit per $1 ad spend = (ROAS * Margin%) - 1
+            let marginPct = MARGIN_UNIT / TICKET;
+            let profitPerDollar = (metricTarget * marginPct) - 1;
+            
+            if (profitPerDollar > 0) {
+                investMin = FIXED / profitPerDollar;
+            } else {
+                investMin = 999999999;
+            }
         }
 
-        // 3. IMPUESTOS SOBRE PAUTA (El toque realista)
-        let investWithTax = invest * (1 + TAX_ADS); // Lo que sale del banco real
-        
-        // 4. ESTADO DE RESULTADOS (P&L)
-        let grossProfit = salesNeeded * MARGIN_UNIT; // Ganancia Bruta (Ventas - COGS)
-        let totalFixed = FIXED + FEE_AGENCY; // Fijos Totales
-        let netProfit = grossProfit - investWithTax - totalFixed;
-        
-        let roi = (netProfit / (investWithTax + totalFixed + (salesNeeded*COGS))) * 100; // ROI sobre costo total
+        // 3. Resultados Finales
+        let grossProfit = salesNeeded * MARGIN_UNIT;
+        let netProfit = grossProfit - investTarget - FIXED;
 
-        // 5. DIAGNÓSTICO (SCORE)
-        let score = 100;
-        let verdict = { t:"EXCELENTE", d:"Estructura sólida para escalar.", c:"var(--profit)", b:"var(--profit)" };
-
-        if(netProfit < 0) {
-            score = 0; 
-            verdict = { t:"NO RENTABLE", d:"Costos + Ads + Agencia superan la ganancia.", c:"var(--loss)", b:"var(--loss)" };
-        } else if (netProfit < GOAL * 0.1) {
-            score = 45; 
-            verdict = { t:"RIESGO ALTO", d:"Margen neto < 10%. Muy sensible a cambios en costos.", c:"var(--risk)", b:"var(--risk)" };
+        // 4. Diagnóstico
+        let dBox = $('diag-box');
+        let dTitle = $('diag-title');
+        let dDesc = $('diag-desc');
+        
+        if (investMin > 99999999) {
+            dBox.className = "diagnosis-card status-bad";
+            dTitle.innerText = "ESTRUCTURA NO VIABLE";
+            dDesc.innerText = "Con tus métricas actuales, pierdes dinero con cada venta. Necesitas subir precio, bajar costos o mejorar conversión urgentemente.";
+        } else if (netProfit < 0) {
+            dBox.className = "diagnosis-card status-bad";
+            dTitle.innerText = "PÉRDIDA PROYECTADA";
+            dDesc.innerText = "Tu meta de facturación no es suficiente para cubrir los costos fijos + publicidad. Necesitas vender más volumen o reducir fijos.";
+        } else if (netProfit < FIXED * 0.3) {
+            dBox.className = "diagnosis-card status-warn";
+            dTitle.innerText = "RIESGO ALTO (MARGEN AJUSTADO)";
+            dDesc.innerText = "El negocio es rentable, pero la utilidad es baja comparada con el riesgo. Cualquier subida en costos de publicidad te hará perder dinero.";
+        } else {
+            dBox.className = "diagnosis-card status-ok";
+            dTitle.innerText = "LUZ VERDE: NEGOCIO ESCALABLE";
+            dDesc.innerText = "Tienes una estructura sólida. Tu margen soporta los costos y genera buena utilidad. ¡Es momento de invertir!";
         }
-
-        // Render Score
-        $('sc-title').innerText = verdict.t;
-        $('sc-title').style.color = verdict.c;
-        $('sc-desc').innerText = verdict.d;
-        $('sc-val').innerText = score + "/100";
-        $('score-card').style.borderColor = verdict.b;
-        $('score-card').querySelector('style')?.remove(); // cleanup style tag if any
-        let style = document.createElement('style');
-        style.innerHTML = `.score-card::before { background: ${verdict.c}; }`;
-        $('score-card').appendChild(style);
 
         // Render KPIs
-        $('kpi-invest').innerText = fmt(investWithTax); // Muestra inversión real con tax
-        $('kpi-goal-txt').innerText = fmt(GOAL);
-        $('kpi-limit').innerText = fmt(limitCost);
-        $('kpi-roi').innerText = roi.toFixed(1) + "%";
-        $('kpi-roi').style.color = roi > 0 ? 'var(--profit)' : 'var(--loss)';
-        $('kpi-net').innerText = fmt(netProfit);
-        $('kpi-net').style.color = netProfit > 0 ? 'var(--profit)' : 'var(--loss)';
-        $('kpi-vol').innerText = traffic.toLocaleString();
+        $('res-inv').innerText = fmt(investTarget);
+        $('res-min').innerText = investMin > 99999999 ? "IMPOSIBLE" : fmt(investMin);
+        $('res-limit').innerText = fmt(metricLimit);
+        $('res-vol').innerText = volume.toLocaleString();
+        $('res-net').innerText = fmt(netProfit);
+        $('res-net').style.color = netProfit > 0 ? "var(--profit)" : "var(--loss)";
         
         if(MODE === 'leads') {
-            $('kpi-target').innerText = fmt(targetMetric) + " /lead";
+            $('res-target').innerText = fmt(metricTarget) + " /lead";
         } else {
-            $('kpi-target').innerText = targetMetric.toFixed(2) + "x ROAS";
+            $('res-target').innerText = metricTarget.toFixed(2) + "x ROAS";
         }
 
-        // 6. ESCENARIOS (Generación Dinámica)
-        let tbody = $('scenario-body');
+        // Tabla Escenarios
+        const tbody = $('sc-table').querySelector('tbody');
         tbody.innerHTML = "";
         
         let scenarios = [];
-        if(MODE === 'leads') {
-            // Escenarios Leads (CPL varía)
+        if(MODE==='leads'){
             scenarios = [
-                { n:"Pesimista (CPL Alto)", mod:1.4 },
-                { n:"Realista (Objetivo)", mod:1.0 },
-                { n:"Optimista (Eficiente)", mod:0.75 }
+                {n:"Pesimista", m: metricTarget*1.3},
+                {n:"Realista", m: metricTarget},
+                {n:"Optimista", m: metricTarget*0.8}
             ];
         } else {
-            // Escenarios Ecom (ROAS varía inversamente)
             scenarios = [
-                { n:"Mínimo (Supervivencia)", mod:0.8 }, // ROAS baja 20%
-                { n:"Realista (Objetivo)", mod:1.0 },
-                { n:"Escala (Volumen)", mod:1.2 }      // ROAS sube 20%
+                {n:"Mínimo", m: metricTarget*0.8},
+                {n:"Realista", m: metricTarget},
+                {n:"Escala", m: metricTarget*1.2}
             ];
         }
 
         scenarios.forEach(sc => {
-            // Recalcular finanzas por escenario
             let s_inv = 0;
-            if(MODE==='leads') s_inv = (traffic * (baseCost * sc.mod)) * (1+TAX_ADS);
-            else s_inv = (GOAL / (baseCost * sc.mod)) * (1+TAX_ADS); // ROAS impacta inv necesaria
-
-            let s_net = grossProfit - s_inv - totalFixed;
-            let barWidth = Math.min(Math.max((s_net / GOAL) * 100 * 2, 5), 100); // Visual bar logic
-            if(s_net < 0) barWidth = 10; 
-
-            let color = s_net > 0 ? 'var(--profit)' : 'var(--loss)';
+            if(MODE==='leads') s_inv = (volume * sc.m);
+            else s_inv = GOAL / sc.m;
             
-            tbody.innerHTML += `
-                <div class="scenario-row">
-                    <div style="font-weight:bold; color:#fff">${sc.n}</div>
-                    <div style="font-family:monospace">${fmt(s_inv)}</div>
-                    <div style="font-family:monospace; color:${color}; font-weight:bold">${fmt(s_net)}</div>
-                    <div>
-                        <div style="font-size:0.7rem; margin-bottom:2px; text-align:right">${s_net>0?'RENTABLE':'PÉRDIDA'}</div>
-                        <div class="bar-container">
-                            <div class="bar-fill" style="width:${barWidth}%; background:${color}"></div>
-                        </div>
-                    </div>
-                </div>
-            `;
+            let s_net = grossProfit - s_inv - FIXED;
+            let color = s_net > 0 ? 'var(--profit)' : 'var(--loss)';
+            let txt = s_net > 0 ? 'RENTABLE' : 'PÉRDIDA';
+            
+            let lbl = MODE==='leads' ? fmt(sc.m) : sc.m.toFixed(2)+"x";
+
+            tbody.innerHTML += `<tr>
+                <td>${sc.n}</td>
+                <td>${lbl}</td>
+                <td>${fmt(s_inv)}</td>
+                <td style="color:${color};font-weight:700">${fmt(s_net)}</td>
+                <td style="color:${color};font-weight:700">${txt}</td>
+            </tr>`;
         });
+
+        // Insights Text
+        let insights = `
+            <strong>ANÁLISIS TÁCTICO:</strong><br>
+            Para facturar <strong>${fmt(GOAL)}</strong>, necesitas invertir <strong>${fmt(investTarget)}</strong>.<br>
+            Tu <strong>Punto de Supervivencia</strong> es <strong>${investMin > 999999 ? "Inalcanzable" : fmt(investMin)}</strong>; si inviertes menos que eso (y vendes proporcionalmente), tus costos fijos te comerán vivo.<br>
+            Tu límite real es pagar <strong>${fmt(metricLimit)}</strong> por adquisición. Si te pasas, pierdes dinero unitario.
+        `;
+        $('insights-txt').innerHTML = insights;
 
         $('results-panel').style.display = 'block';
     }
