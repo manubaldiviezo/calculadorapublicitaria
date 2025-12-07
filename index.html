@@ -3,271 +3,386 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANU | Unit Economics Validator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <title>MANU | Business Profitability Simulator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --brand: #FF4400; /* Naranja MANU */
-            --brand-dim: rgba(255, 68, 0, 0.1);
-            --bg-core: #09090b;
-            --bg-card: #121214;
-            --border: #27272a;
-            --text-main: #e4e4e7;
-            --text-muted: #71717a;
+            /* MANU Identity */
+            --primary: #FF3B00;
+            --primary-soft: rgba(255, 59, 0, 0.1);
             
-            /* Logic Colors */
-            --profit: #10b981; /* Verde */
-            --warning: #f59e0b; /* Amarillo */
-            --critical: #ef4444; /* Rojo */
+            /* Modern Dark Theme */
+            --bg-app: #0c0c0e;
+            --bg-panel: #141416;
+            --bg-input: #1f1f22;
+            --border: #2d2d33;
+            
+            /* Text */
+            --text-1: #ffffff;
+            --text-2: #94949e;
+            
+            /* Status Indicators */
+            --success: #00E096;
+            --warning: #FFAA00;
+            --danger: #FF3B30;
+            
+            --radius: 16px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg-core);
-            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-app);
+            color: var(--text-1);
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow-x: hidden;
         }
 
-        /* --- HEADER --- */
+        /* HEADER */
         header {
-            padding: 1.5rem 3rem;
+            padding: 1.5rem 5%;
             border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-            background: rgba(9, 9, 11, 0.95);
+            background: rgba(20, 20, 22, 0.8);
+            backdrop-filter: blur(20px);
+            position: sticky; top: 0; z-index: 50;
+            display: flex; align-items: center; justify-content: space-between;
         }
+        
+        .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
+        .logo span { color: var(--primary); }
+        .version { font-size: 0.75rem; background: #222; padding: 4px 10px; border-radius: 20px; color: #888; font-weight: 600; }
 
-        .brand-logo { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1.8rem; text-transform: uppercase; letter-spacing: 1px; }
-        .brand-logo span { color: var(--brand); }
-        .methodology-tag { font-size: 0.75rem; background: #222; padding: 4px 10px; border-radius: 4px; color: #aaa; margin-left: 15px; vertical-align: middle; font-family: 'Inter'; }
-
-        /* --- LAYOUT --- */
-        .calculator-grid {
+        /* GRID LAYOUT */
+        .main-grid {
             display: grid;
-            grid-template-columns: 400px 1fr;
-            flex: 1;
-            height: calc(100vh - 85px);
+            grid-template-columns: 420px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 80px);
         }
 
-        /* --- LEFT: BUSINESS DATA --- */
-        .inputs-panel {
-            background: var(--bg-card);
+        /* --- LEFT COLUMN: DATA INPUT --- */
+        .input-sidebar {
+            background: var(--bg-panel);
             border-right: 1px solid var(--border);
             padding: 2.5rem;
-            display: flex; flex-direction: column; gap: 2rem;
             overflow-y: auto;
+            display: flex; flex-direction: column; gap: 2.5rem;
         }
 
-        .section-title {
-            font-size: 0.85rem; color: var(--brand); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; margin-bottom: 1rem;
-            display: flex; align-items: center; gap: 8px;
+        .section-header {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 0.9rem; font-weight: 700; color: var(--text-1); margin-bottom: 1.5rem;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+        .icon-box {
+            width: 24px; height: 24px; background: var(--primary-soft); color: var(--primary);
+            border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
         }
 
-        .input-wrapper { margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.2rem; }
         
-        label { display: block; font-size: 0.85rem; font-weight: 500; color: #ccc; margin-bottom: 8px; }
+        label { display: block; font-size: 0.85rem; color: var(--text-2); margin-bottom: 8px; font-weight: 500; }
+        
+        .input-with-symbol { position: relative; }
+        .input-with-symbol span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #666; font-weight: 600; }
         
         input, select {
             width: 100%;
-            background: #000;
+            background: var(--bg-input);
             border: 1px solid var(--border);
-            color: #fff;
-            padding: 14px;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.2s;
+            border-radius: 10px;
+            padding: 14px 14px 14px 35px; /* Space for symbol */
+            color: var(--text-1);
+            font-family: inherit; font-size: 1rem; font-weight: 500;
+            transition: 0.2s ease;
         }
-        input:focus, select:focus { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-dim); }
+        select { padding-left: 14px; cursor: pointer; }
+        
+        input:focus, select:focus { border-color: var(--primary); background: #252529; box-shadow: 0 0 0 4px var(--primary-soft); }
 
-        .helper-text { font-size: 0.75rem; color: #555; margin-top: 6px; }
+        .helper { font-size: 0.75rem; color: #666; margin-top: 6px; line-height: 1.4; }
 
-        /* --- RIGHT: ANALYSIS --- */
-        .analysis-panel {
-            padding: 3rem;
-            background: radial-gradient(circle at top right, #1a0a0a, #09090b);
+        /* --- RIGHT COLUMN: VISUAL DASHBOARD --- */
+        .dashboard-area {
+            padding: 3rem 4rem;
+            background: radial-gradient(circle at 100% 0%, #1a0f0f, #0c0c0e 40%);
             overflow-y: auto;
-            display: flex; flex-direction: column; gap: 2rem;
         }
 
-        /* Top Cards */
-        .stats-row {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
-        }
-
-        .stat-box {
-            background: rgba(255,255,255,0.02);
+        /* HEALTH INDICATOR */
+        .health-banner {
+            background: var(--bg-panel);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: var(--radius);
             padding: 1.5rem;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative; overflow: hidden;
+        }
+        .health-banner::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--text-2); id: "health-strip"; }
+        
+        .health-text h2 { font-size: 1.2rem; margin-bottom: 5px; }
+        .health-text p { font-size: 0.9rem; color: var(--text-2); }
+        
+        .score-badge {
+            font-size: 1.5rem; font-weight: 800; padding: 10px 20px; border-radius: 12px; background: #222; color: #fff;
+        }
+
+        /* KPI CARDS */
+        .kpi-row {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;
+            transition: transform 0.2s;
+        }
+        .card:hover { transform: translateY(-4px); border-color: #444; }
+
+        .card-label { font-size: 0.8rem; color: var(--text-2); font-weight: 600; text-transform: uppercase; margin-bottom: 15px; }
+        .card-value { font-size: 2.2rem; font-weight: 700; color: var(--text-1); letter-spacing: -1px; }
+        .card-sub { font-size: 0.85rem; color: var(--text-2); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
+
+        /* PROFIT DONUT CHART (CSS ONLY) */
+        .visual-section {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;
+        }
+
+        .chart-container {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+
+        .donut {
+            width: 180px; height: 180px; border-radius: 50%;
+            background: conic-gradient(
+                var(--primary) 0deg 0deg, /* Ads */
+                #444 0deg 0deg, /* COGS */
+                #222 0deg 0deg, /* Ops */
+                var(--success) 0deg 360deg /* Profit */
+            );
             position: relative;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 1s ease;
         }
-        .stat-box.highlight { background: linear-gradient(180deg, rgba(255, 68, 0, 0.05), transparent); border-color: rgba(255, 68, 0, 0.3); }
-
-        .stat-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; }
-        .stat-val { font-family: 'Rajdhani', sans-serif; font-size: 2.5rem; font-weight: 700; color: #fff; line-height: 1; }
-        .stat-sub { font-size: 0.85rem; margin-top: 8px; opacity: 0.8; }
-
-        /* The ROAS Scale Visualizer */
-        .scale-container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2.5rem;
-            margin-top: 1rem;
+        .donut::after {
+            content: ''; position: absolute; width: 140px; height: 140px; background: var(--bg-panel); border-radius: 50%;
         }
-
-        .scale-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 3rem; display: flex; justify-content: space-between; }
-
-        .visual-track-wrapper { position: relative; height: 60px; margin-top: 20px; }
-        
-        .track-bg {
-            width: 100%; height: 12px; background: #222; border-radius: 6px; position: absolute; top: 20px;
+        .donut-text {
+            position: absolute; z-index: 2; text-align: center;
         }
+        .dt-val { font-size: 1.8rem; font-weight: 800; color: var(--text-1); }
+        .dt-lbl { font-size: 0.8rem; color: var(--text-2); }
 
-        /* Zonas de color en el track */
-        .zone-loss { position: absolute; height: 100%; background: var(--critical); border-radius: 6px 0 0 6px; opacity: 0.3; }
-        .zone-profit { position: absolute; height: 100%; background: var(--profit); border-radius: 0 6px 6px 0; opacity: 0.3; }
+        .legend-box { width: 100%; margin-top: 2rem; }
+        .legend-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
 
-        /* Marcadores */
-        .marker {
-            position: absolute; top: 0; transform: translateX(-50%);
-            display: flex; flex-direction: column; align-items: center;
-            transition: left 0.5s ease-out;
+        /* BREAKDOWN LIST */
+        .breakdown-list {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;
         }
-        .marker-line { width: 2px; height: 50px; background: #fff; }
-        .marker-label { font-size: 0.7rem; font-weight: 700; margin-bottom: 5px; text-transform: uppercase; white-space: nowrap; }
-        .marker-val { font-size: 0.9rem; font-weight: 700; margin-top: 5px; background: #000; padding: 2px 6px; border-radius: 4px; border: 1px solid #333; }
+        .bd-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); color: var(--text-2); }
+        .bd-row:last-child { border: none; font-weight: 700; color: var(--text-1); font-size: 1.1rem; padding-top: 20px; }
+        .bd-val { color: var(--text-1); font-family: 'Courier New', monospace; font-weight: 600; }
 
-        .m-be .marker-line { background: var(--critical); }
-        .m-be .marker-label { color: var(--critical); }
-        
-        .m-target .marker-line { background: var(--profit); height: 60px; top: -10px; width: 3px; }
-        .m-target .marker-label { color: var(--profit); font-size: 0.8rem; }
-        
-        .m-market .marker-line { background: var(--text-muted); border-style: dashed; }
-        .m-market .marker-label { color: var(--text-muted); }
-
-        /* Advice Box */
-        .advice-panel {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            border-left: 4px solid #333;
-            background: rgba(255,255,255,0.02);
-            border-radius: 0 8px 8px 0;
-        }
-
-        @media (max-width: 1000px) {
-            .calculator-grid { grid-template-columns: 1fr; }
-            .stats-row { grid-template-columns: 1fr; }
+        /* Responsive */
+        @media (max-width: 1100px) {
+            .main-grid { grid-template-columns: 1fr; }
+            .dashboard-area { padding: 2rem; }
+            .visual-section { grid-template-columns: 1fr; }
+            .kpi-row { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="brand-logo">MANU <span>/ PROFIT ARCHITECT</span></div>
-    <span class="methodology-tag">Metodología: Unit Economics</span>
+    <div class="logo">MANU <span>/ BUSINESS OS</span></div>
+    <div class="version">V13.0 Business Reality</div>
 </header>
 
-<div class="calculator-grid">
+<div class="main-grid">
     
-    <div class="inputs-panel">
+    <div class="input-sidebar">
         
-        <div class="section-title">1. Configuración de Nicho</div>
-        <div class="input-wrapper">
-            <label>Selecciona tu Industria</label>
-            <select id="niche" onchange="calculate()">
-                <option value="fashion" data-roas="4.5">Moda & Ropa (ROAS Est. 4.5x)</option>
-                <option value="beauty" data-roas="3.5">Belleza & Cosmética (ROAS Est. 3.5x)</option>
-                <option value="tech" data-roas="3.0">Tecnología / Gadgets (ROAS Est. 3.0x)</option>
-                <option value="service" data-roas="6.0">Servicios / B2B (ROAS Est. 6.0x)</option>
-                <option value="info" data-roas="3.5">Infoproductos (ROAS Est. 3.5x)</option>
-                <option value="realestate" data-roas="15.0">Inmobiliaria (ROAS Est. 15x)</option>
-            </select>
-            <div class="helper-text">Usamos el rendimiento promedio real de agencias en este sector como referencia.</div>
+        <div>
+            <div class="section-header">
+                <div class="icon-box">1</div>
+                Objetivo & Mercado
+            </div>
+            <div class="form-group">
+                <label>Industria (ROAS Benchmark)</label>
+                <select id="niche" onchange="calculate()">
+                    <option value="4.0">E-commerce: Moda (4.0x)</option>
+                    <option value="3.0">E-commerce: Tech (3.0x)</option>
+                    <option value="5.0">E-commerce: Joyería (5.0x)</option>
+                    <option value="6.0">Servicios: B2B / Legal (6.0x)</option>
+                    <option value="10.0">Servicios: Real Estate (10.0x)</option>
+                    <option value="3.5">Educación: Cursos (3.5x)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Meta de Facturación Mensual</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="revenue" value="10000" oninput="calculate()">
+                </div>
+            </div>
         </div>
 
-        <div class="section-title">2. Finanzas del Producto</div>
-        <div class="input-wrapper">
-            <label>Meta de Facturación ($)</label>
-            <input type="number" id="revenueGoal" value="10000" oninput="calculate()">
+        <div>
+            <div class="section-header">
+                <div class="icon-box">2</div>
+                Costos Variables (Por Venta)
+            </div>
+            <div class="form-group">
+                <label>Precio Promedio (Ticket)</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="price" value="50" oninput="calculate()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Costo de Producto (COGS)</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="cogs" value="18" oninput="calculate()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Impuestos + Pasarelas (% Total)</label>
+                <div class="input-with-symbol">
+                    <span>%</span>
+                    <input type="number" id="vars_percent" value="8" placeholder="Ej. 13% IVA + 3% Tarjeta" oninput="calculate()">
+                </div>
+                <div class="helper">Suma tus impuestos (IVA/IT) y la comisión de Stripe/Banco.</div>
+            </div>
         </div>
 
-        <div class="input-wrapper">
-            <label>Precio de Venta (AOV) ($)</label>
-            <input type="number" id="price" value="60" oninput="calculate()">
-        </div>
-
-        <div class="input-wrapper">
-            <label>Costo Total Producto (COGS + Envío + Tax) ($)</label>
-            <input type="number" id="cost" value="25" oninput="calculate()">
-            <div class="helper-text">Incluye costo de fábrica, empaquetado, impuestos y comisión de pasarela.</div>
+        <div>
+            <div class="section-header">
+                <div class="icon-box">3</div>
+                Costos Operativos (Fijos Mensuales)
+            </div>
+            <div class="form-group">
+                <label>Gastos Fijos (Luz, Internet, Software)</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="fixed_ops" value="300" oninput="calculate()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Recursos Humanos / Sueldos</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="fixed_salary" value="500" oninput="calculate()">
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Fee de Agencia / Marketing</label>
+                <div class="input-with-symbol">
+                    <span>$</span>
+                    <input type="number" id="fixed_agency" value="500" placeholder="Lo que te pagarán a ti" oninput="calculate()">
+                </div>
+                <div class="helper">Incluye aquí lo que cobrarías tú como experto.</div>
+            </div>
         </div>
 
     </div>
 
-    <div class="analysis-panel">
+    <div class="dashboard-area">
         
-        <div class="stats-row">
-            <div class="stat-box highlight">
-                <div class="stat-label">Inversión Necesaria (Est.)</div>
-                <div class="stat-val" id="res-invest">$0</div>
-                <div class="stat-sub">Basado en el ROAS de Mercado</div>
+        <div class="health-banner" id="health-banner">
+            <div class="health-text">
+                <h2 id="health-title">Analizando Negocio...</h2>
+                <p id="health-desc">Ingresa tus datos.</p>
             </div>
-            <div class="stat-box">
-                <div class="stat-label">CPA Objetivo (Máximo)</div>
-                <div class="stat-val" style="color: var(--brand);" id="res-target-cpa">$0</div>
-                <div class="stat-sub">Lo máximo que puedes pagar por venta</div>
+            <div class="score-badge" id="health-score">--</div>
+        </div>
+
+        <div class="kpi-row">
+            <div class="card" style="border-bottom: 3px solid var(--primary);">
+                <div class="card-label">Presupuesto Ads Sugerido</div>
+                <div class="card-value" id="res-invest">$0</div>
+                <div class="card-sub">Basado en Mercado</div>
             </div>
-            <div class="stat-box">
-                <div class="stat-label">Utilidad Neta Proyectada</div>
-                <div class="stat-val" style="color: var(--profit);" id="res-profit">$0</div>
-                <div class="stat-sub" id="res-margin">0% Margen Neto</div>
+            <div class="card">
+                <div class="card-label">Break-Even (Negocio Total)</div>
+                <div class="card-value" id="res-be-total">0.0x</div>
+                <div class="card-sub">ROAS Mínimo para cubrir TODO</div>
+            </div>
+            <div class="card">
+                <div class="card-label">Utilidad Neta Real</div>
+                <div class="card-value" id="res-profit">$0</div>
+                <div class="card-sub" id="res-margin">0% Margen Neto</div>
             </div>
         </div>
 
-        <div class="scale-container">
-            <div class="scale-title">
-                <span>Análisis de Viabilidad & ROAS</span>
-                <span id="viability-badge" style="font-size:0.8rem; background:#333; padding:5px 10px; border-radius:4px;">CALCULANDO</span>
-            </div>
+        <div class="visual-section">
             
-            <p style="color:#888; font-size:0.9rem; margin-bottom: 2rem;">
-                Comparamos tu <strong>Punto de Equilibrio (Break-Even)</strong> contra la <strong>Realidad del Mercado</strong>.
-            </p>
-
-            <div class="visual-track-wrapper">
-                <div class="track-bg"></div>
-                <div class="zone-loss" id="zone-loss" style="width: 30%;"></div>
-                <div class="zone-profit" id="zone-profit" style="left: 30%; width: 70%;"></div>
-
-                <div class="marker m-be" id="mark-be">
-                    <span class="marker-label">Break Even</span>
-                    <span class="marker-line"></span>
-                    <span class="marker-val" id="val-be">0.0x</span>
+            <div class="chart-container">
+                <h4 style="margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; color: #888;">Distribución de Ingresos</h4>
+                <div class="donut" id="profit-donut">
+                    <div class="donut-text">
+                        <div class="dt-val" id="donut-val">0%</div>
+                        <div class="dt-lbl">Profit</div>
+                    </div>
                 </div>
-
-                <div class="marker m-market" id="mark-market">
-                    <span class="marker-label">Mercado</span>
-                    <span class="marker-line"></span>
-                    <span class="marker-val" id="val-market">0.0x</span>
+                
+                <div class="legend-box">
+                    <div class="legend-item">
+                        <span><span class="dot" style="background: #444"></span>Costos Variables (Prod+Tax)</span>
+                        <span id="leg-vars">0%</span>
+                    </div>
+                    <div class="legend-item">
+                        <span><span class="dot" style="background: #222"></span>Costos Operativos (Fijos)</span>
+                        <span id="leg-ops">0%</span>
+                    </div>
+                    <div class="legend-item">
+                        <span><span class="dot" style="background: var(--primary)"></span>Publicidad (Ads)</span>
+                        <span id="leg-ads">0%</span>
+                    </div>
+                    <div class="legend-item" style="font-weight: 700; color: #fff;">
+                        <span><span class="dot" style="background: var(--success)"></span>Utilidad Neta</span>
+                        <span id="leg-net">0%</span>
+                    </div>
                 </div>
             </div>
-            
-            <div style="display:flex; justify-content:space-between; margin-top:60px; font-size:0.75rem; color:#666;">
-                <div>ZONA DE PÉRDIDA</div>
-                <div>ZONA DE GANANCIA</div>
-            </div>
-        </div>
 
-        <div class="advice-panel" id="advice-box" style="border-color: #333;">
-            <div style="color: #fff; font-weight: 700; margin-bottom: 10px; font-size:1.1rem;">Diagnóstico Estratégico</div>
-            <p style="color: #aaa; line-height: 1.6; font-size: 0.95rem;" id="advice-text">
-                Ingresa tus datos para ver el análisis.
-            </p>
+            <div class="breakdown-list">
+                <h4 style="margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; color: #888;">Estado de Resultados (Mensual)</h4>
+                
+                <div class="bd-row">
+                    <span>(+) Ventas Totales</span>
+                    <span class="bd-val" id="bd-rev">$0</span>
+                </div>
+                <div class="bd-row">
+                    <span>(-) Costo de Ventas (COGS + Tax)</span>
+                    <span class="bd-val" style="color: #ff6b6b" id="bd-cogs">-$0</span>
+                </div>
+                <div class="bd-row">
+                    <span>(=) Margen Bruto</span>
+                    <span class="bd-val" id="bd-gross">$0</span>
+                </div>
+                <div style="height: 1px; background: #333; margin: 10px 0;"></div>
+                <div class="bd-row">
+                    <span>(-) Gastos Operativos + Agencia</span>
+                    <span class="bd-val" style="color: #ff6b6b" id="bd-ops">-$0</span>
+                </div>
+                <div class="bd-row">
+                    <span>(-) Inversión Publicitaria</span>
+                    <span class="bd-val" style="color: var(--primary)" id="bd-ads">-$0</span>
+                </div>
+                <div class="bd-row">
+                    <span>(=) UTILIDAD NETA (EBIT)</span>
+                    <span class="bd-val" id="bd-net">$0</span>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -275,124 +390,161 @@
 
 <script>
     function calculate() {
-        // 1. Obtener Datos
-        const revenueGoal = parseFloat(document.getElementById('revenueGoal').value) || 0;
+        // --- 1. CAPTURAR DATOS ---
+        const revenue = parseFloat(document.getElementById('revenue').value) || 0;
         const price = parseFloat(document.getElementById('price').value) || 0;
-        const cost = parseFloat(document.getElementById('cost').value) || 0;
+        const cogsUnit = parseFloat(document.getElementById('cogs').value) || 0;
+        const varPercent = parseFloat(document.getElementById('vars_percent').value) / 100 || 0;
         
-        // Obtener ROAS de Mercado del Select (Data Attributes)
-        const nicheSelect = document.getElementById('niche');
-        const marketROAS = parseFloat(nicheSelect.options[nicheSelect.selectedIndex].dataset.roas);
+        // Costos Fijos
+        const opFixed = parseFloat(document.getElementById('fixed_ops').value) || 0;
+        const opSalary = parseFloat(document.getElementById('fixed_salary').value) || 0;
+        const opAgency = parseFloat(document.getElementById('fixed_agency').value) || 0;
+        const totalFixed = opFixed + opSalary + opAgency;
 
-        if(revenueGoal === 0 || price === 0) return;
+        // Mercado
+        const marketROAS = parseFloat(document.getElementById('niche').value) || 4.0;
 
-        // 2. Cálculo de Unit Economics (Matemática Pura)
-        const grossMargin = price - cost;
-        const grossMarginPerc = (grossMargin / price);
+        if (revenue === 0 || price === 0) return;
+
+        // --- 2. CÁLCULOS MATEMÁTICOS ---
         
-        // Break Even ROAS: El punto exacto donde Ingresos = Costos
-        // Fórmula: 1 / Margen Bruto %
-        let breakEvenROAS = 1 / grossMarginPerc;
+        // Volumen de Ventas
+        const units = Math.ceil(revenue / price);
         
-        // Target CPA (Cost Per Acquisition): Lo máximo que podemos pagar para quedar tablas
-        // (Aunque lo ideal es pagar menos para tener ganancia)
-        const maxCPA = grossMargin; // Si pagas esto, sales tablas (profit 0)
+        // Costos Variables Totales
+        const totalCOGS = units * cogsUnit;
+        const totalTaxes = revenue * varPercent;
+        const totalVariable = totalCOGS + totalTaxes;
         
-        // CPA Realista (basado en Mercado)
-        // Si el mercado da un ROAS de X, el CPA será Precio / ROAS
-        const realisticCPA = price / marketROAS;
+        // Margen Bruto (Antes de Ops y Ads)
+        const grossMargin = revenue - totalVariable;
+        
+        // Inversión Ads (Basada en Mercado)
+        const adSpend = revenue / marketROAS;
+        
+        // Utilidad Neta
+        const netProfit = grossMargin - totalFixed - adSpend;
+        const netMarginPerc = (netProfit / revenue) * 100;
 
-        // 3. Proyección Financiera usando Datos de Mercado
-        const investmentNeeded = revenueGoal / marketROAS;
-        const totalSales = Math.ceil(revenueGoal / price);
-        const totalCOGS = totalSales * cost;
-        const projectedProfit = revenueGoal - totalCOGS - investmentNeeded;
-        const projectedMargin = (projectedProfit / revenueGoal) * 100;
-
-        // 4. Renderizar Textos
-        document.getElementById('res-invest').innerText = fmtMoney(investmentNeeded);
-        document.getElementById('res-target-cpa').innerText = fmtMoney(maxCPA); // Mostramos el CPA Máximo Permisible
-        document.getElementById('res-profit').innerText = fmtMoney(projectedProfit);
-        document.getElementById('res-margin').innerText = projectedMargin.toFixed(1) + "% Margen Neto";
-
-        // Color Profit
-        if(projectedProfit < 0) {
-            document.getElementById('res-profit').style.color = "var(--critical)";
+        // Break Evens
+        // BE Operativo: Cuánto ROAS necesito para cubrir TODO (Var + Fijos + Ads)
+        // Formula derivada: Ingreso = CostoVar + CostoFijo + (Ingreso/ROAS)
+        // Despejando ROAS... es complejo, simplifiquemos:
+        // Necesito que (Ingreso - CostoVar - CostoFijo) sea > 0 antes de ads.
+        const moneyAvailableForAds = grossMargin - totalFixed;
+        let businessBreakEvenROAS = 0;
+        
+        if (moneyAvailableForAds <= 0) {
+            businessBreakEvenROAS = 999; // Imposible, ya perdiste antes de anunciar
         } else {
-            document.getElementById('res-profit').style.color = "var(--profit)";
+            // ROAS = Ingreso / Inversión Máxima Posible (que es el dinero disponible)
+            businessBreakEvenROAS = revenue / moneyAvailableForAds;
         }
 
-        // 5. Renderizar Gráfico (La Escala)
-        // Definimos el rango del gráfico. Máximo será el mayor entre BE y Mercado * 1.5
-        const maxScale = Math.max(breakEvenROAS, marketROAS) * 1.5;
+        // --- 3. ACTUALIZAR UI ---
         
-        // Posiciones Porcentuales (0 a 100%)
-        const posBE = (breakEvenROAS / maxScale) * 100;
-        const posMarket = (marketROAS / maxScale) * 100;
+        // KPIs
+        document.getElementById('res-invest').innerText = fmtMoney(adSpend);
+        document.getElementById('res-profit').innerText = fmtMoney(netProfit);
+        document.getElementById('res-margin').innerText = netMarginPerc.toFixed(1) + "%";
+        
+        const beEl = document.getElementById('res-be-total');
+        if (businessBreakEvenROAS > 50) {
+            beEl.innerText = "IMPOSIBLE";
+            beEl.style.color = "var(--danger)";
+        } else {
+            beEl.innerText = businessBreakEvenROAS.toFixed(2) + "x";
+            // Color logic for BE
+            if(businessBreakEvenROAS > marketROAS) beEl.style.color = "var(--danger)";
+            else beEl.style.color = "var(--success)";
+        }
 
-        // Mover Marcadores
-        moveMarker('mark-be', posBE, breakEvenROAS);
-        moveMarker('mark-market', posMarket, marketROAS);
+        // Breakdown List
+        document.getElementById('bd-rev').innerText = fmtMoney(revenue);
+        document.getElementById('bd-cogs').innerText = "-" + fmtMoney(totalVariable);
+        document.getElementById('bd-gross').innerText = fmtMoney(grossMargin);
+        document.getElementById('bd-ops').innerText = "-" + fmtMoney(totalFixed);
+        document.getElementById('bd-ads').innerText = "-" + fmtMoney(adSpend);
+        document.getElementById('bd-net').innerText = fmtMoney(netProfit);
 
-        // Ajustar Zonas de Color
-        document.getElementById('zone-loss').style.width = posBE + "%";
-        document.getElementById('zone-profit').style.left = posBE + "%";
-        document.getElementById('zone-profit').style.width = (100 - posBE) + "%";
+        // Chart Donut Logic
+        const pVar = (totalVariable / revenue) * 100;
+        const pOps = (totalFixed / revenue) * 100;
+        const pAds = (adSpend / revenue) * 100;
+        let pNet = netMarginPerc;
+        if(pNet < 0) pNet = 0;
 
-        // 6. Generar Diagnóstico (Lógica de Experto)
-        generateAdvice(breakEvenROAS, marketROAS, projectedMargin, maxCPA, realisticCPA);
+        // Construir gradiente cónico
+        // Start points
+        const s1 = 0; 
+        const e1 = pAds; // Orange
+        const e2 = e1 + pVar; // Grey
+        const e3 = e2 + pOps; // Dark
+        // El resto es verde o vacio
+
+        const donut = document.getElementById('profit-donut');
+        donut.style.background = `conic-gradient(
+            var(--primary) ${s1}% ${e1}%,
+            #444 ${e1}% ${e2}%,
+            #222 ${e2}% ${e3}%,
+            var(--success) ${e3}% 100%
+        )`;
+        
+        document.getElementById('donut-val').innerText = netMarginPerc.toFixed(0) + "%";
+        
+        // Legend text
+        document.getElementById('leg-vars').innerText = pVar.toFixed(1) + "%";
+        document.getElementById('leg-ops').innerText = pOps.toFixed(1) + "%";
+        document.getElementById('leg-ads').innerText = pAds.toFixed(1) + "%";
+        document.getElementById('leg-net').innerText = netMarginPerc.toFixed(1) + "%";
+
+        // --- 4. DIAGNÓSTICO DE SALUD (HEALTH SCORE) ---
+        analyzeHealth(netMarginPerc, businessBreakEvenROAS, marketROAS, moneyAvailableForAds);
     }
 
-    function moveMarker(id, percent, val) {
-        const el = document.getElementById(id);
-        // Limitar para que no se salga
-        if(percent > 95) percent = 95;
-        if(percent < 0) percent = 0;
-        
-        el.style.left = percent + "%";
-        document.getElementById(id.replace('mark', 'val')).innerText = val.toFixed(2) + "x";
-    }
+    function analyzeHealth(margin, beROAS, marketROAS, moneyAvailable) {
+        const banner = document.getElementById('health-banner');
+        const title = document.getElementById('health-title');
+        const desc = document.getElementById('health-desc');
+        const score = document.getElementById('health-score');
+        const strip = document.querySelector('.health-banner::before'); // Pseudo access workaround via class toggle
 
-    function generateAdvice(be, market, margin, maxCPA, realCPA) {
-        const badge = document.getElementById('viability-badge');
-        const box = document.getElementById('advice-box');
-        const text = document.getElementById('advice-text');
-        
-        let status = "";
-        let color = "";
-        let message = "";
+        let state = ""; // safe, warn, danger
 
-        // Caso 1: Break Even es mayor que el Mercado (IMPOSIBLE SER RENTABLE)
-        if (be > market) {
-            status = "NO VIABLE";
-            color = "var(--critical)";
-            message = `🛑 <strong>ALTO RIESGO:</strong> Tu negocio necesita un ROAS de ${be.toFixed(2)}x para no perder dinero, pero el mercado en este nicho suele dar ${market.toFixed(2)}x. <br><br>
-            Esto significa que <strong>el costo de publicidad es más alto que tu margen</strong>. <br>
-            Tu CPA Máximo es ${fmtMoney(maxCPA)}, pero conseguir un cliente costará aprox ${fmtMoney(realCPA)}. <br>
-            <strong>Solución:</strong> Debes subir precios, bajar costos de producto o aumentar el LTV antes de invertir.`;
-        } 
-        // Caso 2: Rentable pero arriesgado (Margen bajo)
-        else if (margin < 15) {
-            status = "MARGEN AJUSTADO";
-            color = "var(--warning)";
-            message = `⚠️ <strong>PRECAUCIÓN:</strong> Eres rentable, pero con poco margen de error (${margin.toFixed(1)}%). <br><br>
-            Tu Break Even (${be.toFixed(2)}x) está muy cerca del promedio del mercado. Si los costos de publicidad suben un poco (ej. en Navidad), podrías perder dinero. <br>
-            <strong>Estrategia:</strong> Enfócate en vender Packs o Bundles para aumentar el Ticket Promedio y alejarte del Break Even.`;
+        if (moneyAvailable <= 0) {
+            // Pierde dinero antes de Ads
+            title.innerText = "ESTRUCTURA NO VIABLE";
+            desc.innerText = "Tus costos fijos y variables superan tus ingresos sin siquiera invertir en publicidad.";
+            score.innerText = "F";
+            score.style.color = "var(--danger)";
+            banner.style.borderColor = "var(--danger)";
+        } else if (beROAS > marketROAS) {
+            // Necesita un ROAS imposible
+            title.innerText = "ALTO RIESGO";
+            desc.innerText = `Necesitas un ROAS de ${beROAS.toFixed(2)}x para cubrir gastos, pero el mercado da ${marketROAS}x.`;
+            score.innerText = "D";
+            score.style.color = "var(--danger)";
+            banner.style.borderColor = "var(--danger)";
+        } else if (margin < 10) {
+            title.innerText = "MARGEN FRÁGIL";
+            desc.innerText = "El negocio es rentable pero cualquier imprevisto te pondrá en pérdidas.";
+            score.innerText = "C";
+            score.style.color = "var(--warning)";
+            banner.style.borderColor = "var(--warning)";
+        } else if (margin < 20) {
+            title.innerText = "NEGOCIO SALUDABLE";
+            desc.innerText = "Tienes una estructura sólida para invertir y crecer.";
+            score.innerText = "B";
+            score.style.color = "var(--success)";
+            banner.style.borderColor = "var(--success)";
+        } else {
+            title.innerText = "MÁQUINA DE DINERO";
+            desc.innerText = "Tu estructura de costos es excelente. Puedes escalar agresivamente.";
+            score.innerText = "A+";
+            score.style.color = "var(--success)";
+            banner.style.borderColor = "var(--success)";
         }
-        // Caso 3: Rentable y Saludable
-        else {
-            status = "EXCELENTE";
-            color = "var(--profit)";
-            message = `🚀 <strong>LUZ VERDE:</strong> Tienes una estructura financiera sólida. <br><br>
-            Tu Break Even es bajo (${be.toFixed(2)}x) comparado con el potencial del mercado (${market.toFixed(2)}x). Esto te deja un margen de seguridad amplio. <br>
-            Puedes permitirte pagar hasta ${fmtMoney(maxCPA)} por cliente, pero probablemente los conseguirás por ${fmtMoney(realCPA)}. ¡Es momento de escalar!`;
-        }
-
-        badge.innerText = status;
-        badge.style.background = color;
-        badge.style.color = "#000"; // Contrast text
-        box.style.borderColor = color;
-        text.innerHTML = message;
     }
 
     function fmtMoney(num) {
