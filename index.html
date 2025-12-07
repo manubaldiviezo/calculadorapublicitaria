@@ -3,386 +3,332 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MANU | Business Profitability Simulator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <title>Proyección de Rentabilidad Comercial | MANU</title>
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            /* MANU Identity */
-            --primary: #FF3B00;
-            --primary-soft: rgba(255, 59, 0, 0.1);
+            --brand: #FF4400; /* Naranja MANU */
+            --brand-dark: #cc3600;
             
-            /* Modern Dark Theme */
-            --bg-app: #0c0c0e;
-            --bg-panel: #141416;
-            --bg-input: #1f1f22;
-            --border: #2d2d33;
+            /* Colores Financieros */
+            --positive: #00C853; /* Verde Dinero */
+            --negative: #FF3D00; /* Rojo Alerta */
+            --neutral: #FFD600;  /* Amarillo Precaución */
             
-            /* Text */
-            --text-1: #ffffff;
-            --text-2: #94949e;
-            
-            /* Status Indicators */
-            --success: #00E096;
-            --warning: #FFAA00;
-            --danger: #FF3B30;
-            
-            --radius: 16px;
+            /* Interfaz Sobria (Terrenal) */
+            --bg-page: #0F1115;  /* Gris muy oscuro, no negro absoluto */
+            --bg-panel: #181A20; /* Panel elevado */
+            --bg-field: #23262F; /* Inputs */
+            --border: #353945;   /* Bordes sutiles */
+            --text-main: #FFFFFF;
+            --text-sub: #B1B5C3;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-app);
-            color: var(--text-1);
-            min-height: 100vh;
+            font-family: 'Public Sans', sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
             display: flex;
             flex-direction: column;
-            overflow-x: hidden;
+            min-height: 100vh;
         }
 
-        /* HEADER */
+        /* --- HEADER --- */
         header {
-            padding: 1.5rem 5%;
+            background: var(--bg-panel);
             border-bottom: 1px solid var(--border);
-            background: rgba(20, 20, 22, 0.8);
-            backdrop-filter: blur(20px);
-            position: sticky; top: 0; z-index: 50;
+            padding: 1.2rem 3rem;
             display: flex; align-items: center; justify-content: space-between;
         }
         
-        .logo { font-weight: 800; font-size: 1.4rem; letter-spacing: -0.5px; }
-        .logo span { color: var(--primary); }
-        .version { font-size: 0.75rem; background: #222; padding: 4px 10px; border-radius: 20px; color: #888; font-weight: 600; }
+        .brand-block h1 { font-size: 1.2rem; font-weight: 700; color: #fff; letter-spacing: -0.5px; }
+        .brand-block span { color: var(--brand); }
+        .brand-desc { font-size: 0.8rem; color: var(--text-sub); margin-top: 2px; }
 
-        /* GRID LAYOUT */
-        .main-grid {
+        /* --- MAIN LAYOUT --- */
+        .container {
             display: grid;
-            grid-template-columns: 420px 1fr;
-            gap: 0;
-            min-height: calc(100vh - 80px);
+            grid-template-columns: 450px 1fr; /* Panel Inputs más ancho para comodidad */
+            flex: 1;
+            height: calc(100vh - 75px);
         }
 
-        /* --- LEFT COLUMN: DATA INPUT --- */
-        .input-sidebar {
+        /* --- LEFT: DATA INPUTS --- */
+        .sidebar {
             background: var(--bg-panel);
             border-right: 1px solid var(--border);
-            padding: 2.5rem;
+            padding: 2rem;
             overflow-y: auto;
-            display: flex; flex-direction: column; gap: 2.5rem;
+            display: flex; flex-direction: column; gap: 2rem;
         }
 
-        .section-header {
-            display: flex; align-items: center; gap: 10px;
-            font-size: 0.9rem; font-weight: 700; color: var(--text-1); margin-bottom: 1.5rem;
-            text-transform: uppercase; letter-spacing: 1px;
+        .input-category {
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1.5rem;
         }
-        .icon-box {
-            width: 24px; height: 24px; background: var(--primary-soft); color: var(--primary);
-            border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.8rem;
+        .input-category:last-child { border-bottom: none; }
+
+        .category-title {
+            font-size: 0.9rem; font-weight: 700; color: var(--brand); text-transform: uppercase; margin-bottom: 1rem;
+            display: flex; align-items: center; gap: 8px;
         }
 
-        .form-group { margin-bottom: 1.2rem; }
-        
-        label { display: block; font-size: 0.85rem; color: var(--text-2); margin-bottom: 8px; font-weight: 500; }
-        
-        .input-with-symbol { position: relative; }
-        .input-with-symbol span { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #666; font-weight: 600; }
+        .row { display: flex; gap: 1rem; margin-bottom: 1rem; }
+        .col { flex: 1; }
+
+        label { display: block; font-size: 0.8rem; color: var(--text-sub); margin-bottom: 6px; font-weight: 500; }
         
         input, select {
             width: 100%;
-            background: var(--bg-input);
+            background: var(--bg-field);
             border: 1px solid var(--border);
-            border-radius: 10px;
-            padding: 14px 14px 14px 35px; /* Space for symbol */
-            color: var(--text-1);
-            font-family: inherit; font-size: 1rem; font-weight: 500;
-            transition: 0.2s ease;
+            color: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            font-family: inherit; font-size: 0.95rem;
+            transition: 0.2s;
         }
-        select { padding-left: 14px; cursor: pointer; }
-        
-        input:focus, select:focus { border-color: var(--primary); background: #252529; box-shadow: 0 0 0 4px var(--primary-soft); }
+        input:focus, select:focus { border-color: var(--brand); background: #2C303A; }
 
-        .helper { font-size: 0.75rem; color: #666; margin-top: 6px; line-height: 1.4; }
+        .note { font-size: 0.75rem; color: #666; margin-top: 4px; line-height: 1.3; }
 
-        /* --- RIGHT COLUMN: VISUAL DASHBOARD --- */
-        .dashboard-area {
-            padding: 3rem 4rem;
-            background: radial-gradient(circle at 100% 0%, #1a0f0f, #0c0c0e 40%);
+        /* --- RIGHT: ANALYSIS --- */
+        .main-view {
+            padding: 3rem;
             overflow-y: auto;
+            background: radial-gradient(circle at top right, #1f1515, var(--bg-page));
         }
 
-        /* HEALTH INDICATOR */
-        .health-banner {
-            background: var(--bg-panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 1.5rem;
-            display: flex; align-items: center; justify-content: space-between;
-            margin-bottom: 2rem;
+        /* SUMMARY CARDS */
+        .summary-header { margin-bottom: 2rem; }
+        .summary-header h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+        
+        .cards-container {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem;
             position: relative; overflow: hidden;
         }
-        .health-banner::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; background: var(--text-2); id: "health-strip"; }
+        .metric-card.primary { border-top: 3px solid var(--brand); }
         
-        .health-text h2 { font-size: 1.2rem; margin-bottom: 5px; }
-        .health-text p { font-size: 0.9rem; color: var(--text-2); }
-        
-        .score-badge {
-            font-size: 1.5rem; font-weight: 800; padding: 10px 20px; border-radius: 12px; background: #222; color: #fff;
+        .metric-label { font-size: 0.8rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+        .metric-value { font-size: 2.2rem; font-weight: 700; color: #fff; }
+        .metric-context { font-size: 0.8rem; margin-top: 8px; color: var(--text-sub); padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.05); }
+
+        /* FINANCIAL STATEMENT (Estado de Resultados) */
+        .statement-box {
+            background: var(--bg-panel); border: 1px solid var(--border); border-radius: 8px; padding: 2rem;
+            max-width: 800px;
         }
 
-        /* KPI CARDS */
-        .kpi-row {
-            display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;
-        }
-        
-        .card {
-            background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem;
-            transition: transform 0.2s;
-        }
-        .card:hover { transform: translateY(-4px); border-color: #444; }
+        .st-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; }
 
-        .card-label { font-size: 0.8rem; color: var(--text-2); font-weight: 600; text-transform: uppercase; margin-bottom: 15px; }
-        .card-value { font-size: 2.2rem; font-weight: 700; color: var(--text-1); letter-spacing: -1px; }
-        .card-sub { font-size: 0.85rem; color: var(--text-2); margin-top: 10px; display: flex; align-items: center; gap: 6px; }
-
-        /* PROFIT DONUT CHART (CSS ONLY) */
-        .visual-section {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem;
+        .st-row {
+            display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0;
+            border-bottom: 1px solid rgba(255,255,255,0.03); font-size: 0.95rem;
         }
+        .st-row.sub-row { padding-left: 20px; font-size: 0.85rem; color: var(--text-sub); }
+        .st-row.total-row { border-top: 1px solid var(--border); border-bottom: none; font-weight: 700; font-size: 1.1rem; margin-top: 10px; padding-top: 15px; }
+        .st-row.highlight-row { background: rgba(255, 68, 0, 0.05); padding-left: 10px; padding-right: 10px; border-radius: 4px; color: var(--brand); font-weight: 600; }
 
-        .chart-container {
-            background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        .educational-tooltip {
+            margin-top: 2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 3px solid var(--text-sub);
+            padding: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            line-height: 1.6;
         }
 
-        .donut {
-            width: 180px; height: 180px; border-radius: 50%;
-            background: conic-gradient(
-                var(--primary) 0deg 0deg, /* Ads */
-                #444 0deg 0deg, /* COGS */
-                #222 0deg 0deg, /* Ops */
-                var(--success) 0deg 360deg /* Profit */
-            );
-            position: relative;
-            display: flex; align-items: center; justify-content: center;
-            transition: background 1s ease;
-        }
-        .donut::after {
-            content: ''; position: absolute; width: 140px; height: 140px; background: var(--bg-panel); border-radius: 50%;
-        }
-        .donut-text {
-            position: absolute; z-index: 2; text-align: center;
-        }
-        .dt-val { font-size: 1.8rem; font-weight: 800; color: var(--text-1); }
-        .dt-lbl { font-size: 0.8rem; color: var(--text-2); }
+        /* BREAK EVEN BAR */
+        .be-visual { margin-top: 1rem; }
+        .be-bar-bg { width: 100%; height: 8px; background: #333; border-radius: 4px; position: relative; margin-top: 10px; }
+        .be-fill { height: 100%; border-radius: 4px; transition: width 0.5s; position: absolute; left: 0; }
+        .be-marker { position: absolute; top: -15px; transform: translateX(-50%); font-size: 0.75rem; font-weight: 700; color: #fff; }
 
-        .legend-box { width: 100%; margin-top: 2rem; }
-        .legend-item { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 0.9rem; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
-
-        /* BREAKDOWN LIST */
-        .breakdown-list {
-            background: var(--bg-panel); border: 1px solid var(--border); border-radius: var(--radius); padding: 2rem;
-        }
-        .bd-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); color: var(--text-2); }
-        .bd-row:last-child { border: none; font-weight: 700; color: var(--text-1); font-size: 1.1rem; padding-top: 20px; }
-        .bd-val { color: var(--text-1); font-family: 'Courier New', monospace; font-weight: 600; }
-
-        /* Responsive */
         @media (max-width: 1100px) {
-            .main-grid { grid-template-columns: 1fr; }
-            .dashboard-area { padding: 2rem; }
-            .visual-section { grid-template-columns: 1fr; }
-            .kpi-row { grid-template-columns: 1fr; }
+            .container { grid-template-columns: 1fr; }
+            .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
+            .cards-container { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <div class="logo">MANU <span>/ BUSINESS OS</span></div>
-    <div class="version">V13.0 Business Reality</div>
+    <div class="brand-block">
+        <h1>Proyección de Rentabilidad <span>MANU</span></h1>
+        <div class="brand-desc">Planificación Financiera & Estrategia de Pauta</div>
+    </div>
 </header>
 
-<div class="main-grid">
+<div class="container">
     
-    <div class="input-sidebar">
+    <div class="sidebar">
         
-        <div>
-            <div class="section-header">
-                <div class="icon-box">1</div>
-                Objetivo & Mercado
+        <div class="input-category">
+            <div class="category-title">1. Mercado & Objetivo</div>
+            <div class="row">
+                <div class="col">
+                    <label>Rubro (Estimación ROAS 2025)</label>
+                    <select id="niche" onchange="calculate()">
+                        <option value="5.0">Moda & Retail (Est. 5.0x)</option>
+                        <option value="4.0">Tecnología (Est. 4.0x)</option>
+                        <option value="6.0">Salud & Belleza (Est. 6.0x)</option>
+                        <option value="8.0">Servicios B2B (Est. 8.0x)</option>
+                        <option value="25.0">Inmobiliaria (Est. 25.0x)</option>
+                        <option value="5.0">Educación (Est. 5.0x)</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Industria (ROAS Benchmark)</label>
-                <select id="niche" onchange="calculate()">
-                    <option value="4.0">E-commerce: Moda (4.0x)</option>
-                    <option value="3.0">E-commerce: Tech (3.0x)</option>
-                    <option value="5.0">E-commerce: Joyería (5.0x)</option>
-                    <option value="6.0">Servicios: B2B / Legal (6.0x)</option>
-                    <option value="10.0">Servicios: Real Estate (10.0x)</option>
-                    <option value="3.5">Educación: Cursos (3.5x)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Meta de Facturación Mensual</label>
-                <div class="input-with-symbol">
-                    <span>$</span>
+            <div class="row">
+                <div class="col">
+                    <label>Meta de Facturación Mensual ($)</label>
                     <input type="number" id="revenue" value="10000" oninput="calculate()">
                 </div>
             </div>
         </div>
 
-        <div>
-            <div class="section-header">
-                <div class="icon-box">2</div>
-                Costos Variables (Por Venta)
-            </div>
-            <div class="form-group">
-                <label>Precio Promedio (Ticket)</label>
-                <div class="input-with-symbol">
-                    <span>$</span>
-                    <input type="number" id="price" value="50" oninput="calculate()">
+        <div class="input-category">
+            <div class="category-title">2. Economía del Producto</div>
+            <div class="row">
+                <div class="col">
+                    <label>Precio de Venta (AOV) ($)</label>
+                    <input type="number" id="price" value="80" oninput="calculate()">
+                </div>
+                <div class="col">
+                    <label>Costo Producto (COGS) ($)</label>
+                    <input type="number" id="cost" value="25" oninput="calculate()">
                 </div>
             </div>
-            <div class="form-group">
-                <label>Costo de Producto (COGS)</label>
-                <div class="input-with-symbol">
-                    <span>$</span>
-                    <input type="number" id="cogs" value="18" oninput="calculate()">
+            <div class="row">
+                <div class="col">
+                    <label>Impuestos (% Ventas)</label>
+                    <input type="number" id="tax" value="13" placeholder="IVA/IT" oninput="calculate()">
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Impuestos + Pasarelas (% Total)</label>
-                <div class="input-with-symbol">
-                    <span>%</span>
-                    <input type="number" id="vars_percent" value="8" placeholder="Ej. 13% IVA + 3% Tarjeta" oninput="calculate()">
+                <div class="col">
+                    <label>Pasarela Pago (%)</label>
+                    <input type="number" id="fee" value="4" placeholder="Tarjeta" oninput="calculate()">
                 </div>
-                <div class="helper">Suma tus impuestos (IVA/IT) y la comisión de Stripe/Banco.</div>
             </div>
         </div>
 
-        <div>
-            <div class="section-header">
-                <div class="icon-box">3</div>
-                Costos Operativos (Fijos Mensuales)
-            </div>
-            <div class="form-group">
-                <label>Gastos Fijos (Luz, Internet, Software)</label>
-                <div class="input-with-symbol">
-                    <span>$</span>
-                    <input type="number" id="fixed_ops" value="300" oninput="calculate()">
+        <div class="input-category">
+            <div class="category-title">3. Costos Operativos (Fijos/Mes)</div>
+            <p style="font-size:0.8rem; color:#888; margin-bottom:10px;">Costos que pagas vendas o no vendas.</p>
+            
+            <div class="row">
+                <div class="col">
+                    <label>Equipo / Sueldos ($)</label>
+                    <input type="number" id="fix_salary" value="500" oninput="calculate()">
+                </div>
+                <div class="col">
+                    <label>Alquiler / Oficina ($)</label>
+                    <input type="number" id="fix_rent" value="200" oninput="calculate()">
                 </div>
             </div>
-            <div class="form-group">
-                <label>Recursos Humanos / Sueldos</label>
-                <div class="input-with-symbol">
-                    <span>$</span>
-                    <input type="number" id="fixed_salary" value="500" oninput="calculate()">
+            <div class="row">
+                <div class="col">
+                    <label>Software / Suscripciones ($)</label>
+                    <input type="number" id="fix_soft" value="100" placeholder="Shopify, Hosting" oninput="calculate()">
                 </div>
-            </div>
-            <div class="form-group">
-                <label>Fee de Agencia / Marketing</label>
-                <div class="input-with-symbol">
-                    <span>$</span>
-                    <input type="number" id="fixed_agency" value="500" placeholder="Lo que te pagarán a ti" oninput="calculate()">
+                <div class="col">
+                    <label>Fee Agencia / Consultor ($)</label>
+                    <input type="number" id="fix_agency" value="500" placeholder="Tus Honorarios" oninput="calculate()">
+                    <div class="note">Incluye aquí lo que cobras tú.</div>
                 </div>
-                <div class="helper">Incluye aquí lo que cobrarías tú como experto.</div>
             </div>
         </div>
 
     </div>
 
-    <div class="dashboard-area">
+    <div class="main-view">
         
-        <div class="health-banner" id="health-banner">
-            <div class="health-text">
-                <h2 id="health-title">Analizando Negocio...</h2>
-                <p id="health-desc">Ingresa tus datos.</p>
-            </div>
-            <div class="score-badge" id="health-score">--</div>
+        <div class="summary-header">
+            <h2>Resultados Financieros</h2>
+            <p style="color:var(--text-sub)">Análisis de viabilidad basado en costos operativos completos.</p>
         </div>
 
-        <div class="kpi-row">
-            <div class="card" style="border-bottom: 3px solid var(--primary);">
-                <div class="card-label">Presupuesto Ads Sugerido</div>
-                <div class="card-value" id="res-invest">$0</div>
-                <div class="card-sub">Basado en Mercado</div>
+        <div class="cards-container">
+            <div class="metric-card primary">
+                <div class="metric-label">Inversión Publicitaria Sugerida</div>
+                <div class="metric-value" id="res-invest">$0</div>
+                <div class="metric-context">Calculada para lograr tu meta con ROAS de mercado</div>
             </div>
-            <div class="card">
-                <div class="card-label">Break-Even (Negocio Total)</div>
-                <div class="card-value" id="res-be-total">0.0x</div>
-                <div class="card-sub">ROAS Mínimo para cubrir TODO</div>
+            <div class="metric-card">
+                <div class="metric-label">ROAS de Equilibrio (Total)</div>
+                <div class="metric-value" id="res-be">0.0x</div>
+                <div class="metric-context" id="be-context">Debes superar esto para ganar dinero</div>
             </div>
-            <div class="card">
-                <div class="card-label">Utilidad Neta Real</div>
-                <div class="card-value" id="res-profit">$0</div>
-                <div class="card-sub" id="res-margin">0% Margen Neto</div>
+            <div class="metric-card">
+                <div class="metric-label">Utilidad Neta Real</div>
+                <div class="metric-value" id="res-profit">$0</div>
+                <div class="metric-context" id="res-margin">0% Margen Final</div>
             </div>
         </div>
 
-        <div class="visual-section">
+        <div class="statement-box">
+            <div class="st-title">
+                <span>Estado de Resultados Proyectado (Mensual)</span>
+                <span style="font-size:0.8rem; font-weight:400; color:#888;">Moneda: USD</span>
+            </div>
+
+            <div class="st-row">
+                <span>(+) Ingresos por Ventas</span>
+                <span id="txt-rev">$0</span>
+            </div>
+
+            <div class="st-row sub-row">
+                <span>(-) Costo de Mercadería (COGS)</span>
+                <span id="txt-cogs">($0)</span>
+            </div>
+            <div class="st-row sub-row">
+                <span>(-) Impuestos y Comisiones Pasarela</span>
+                <span id="txt-vars">($0)</span>
+            </div>
             
-            <div class="chart-container">
-                <h4 style="margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; color: #888;">Distribución de Ingresos</h4>
-                <div class="donut" id="profit-donut">
-                    <div class="donut-text">
-                        <div class="dt-val" id="donut-val">0%</div>
-                        <div class="dt-lbl">Profit</div>
-                    </div>
-                </div>
-                
-                <div class="legend-box">
-                    <div class="legend-item">
-                        <span><span class="dot" style="background: #444"></span>Costos Variables (Prod+Tax)</span>
-                        <span id="leg-vars">0%</span>
-                    </div>
-                    <div class="legend-item">
-                        <span><span class="dot" style="background: #222"></span>Costos Operativos (Fijos)</span>
-                        <span id="leg-ops">0%</span>
-                    </div>
-                    <div class="legend-item">
-                        <span><span class="dot" style="background: var(--primary)"></span>Publicidad (Ads)</span>
-                        <span id="leg-ads">0%</span>
-                    </div>
-                    <div class="legend-item" style="font-weight: 700; color: #fff;">
-                        <span><span class="dot" style="background: var(--success)"></span>Utilidad Neta</span>
-                        <span id="leg-net">0%</span>
-                    </div>
-                </div>
+            <div class="st-row" style="font-weight:600; color:#fff;">
+                <span>(=) Margen Bruto</span>
+                <span id="txt-gross">$0</span>
             </div>
 
-            <div class="breakdown-list">
-                <h4 style="margin-bottom: 20px; font-size: 0.9rem; text-transform: uppercase; color: #888;">Estado de Resultados (Mensual)</h4>
-                
-                <div class="bd-row">
-                    <span>(+) Ventas Totales</span>
-                    <span class="bd-val" id="bd-rev">$0</span>
-                </div>
-                <div class="bd-row">
-                    <span>(-) Costo de Ventas (COGS + Tax)</span>
-                    <span class="bd-val" style="color: #ff6b6b" id="bd-cogs">-$0</span>
-                </div>
-                <div class="bd-row">
-                    <span>(=) Margen Bruto</span>
-                    <span class="bd-val" id="bd-gross">$0</span>
-                </div>
-                <div style="height: 1px; background: #333; margin: 10px 0;"></div>
-                <div class="bd-row">
-                    <span>(-) Gastos Operativos + Agencia</span>
-                    <span class="bd-val" style="color: #ff6b6b" id="bd-ops">-$0</span>
-                </div>
-                <div class="bd-row">
-                    <span>(-) Inversión Publicitaria</span>
-                    <span class="bd-val" style="color: var(--primary)" id="bd-ads">-$0</span>
-                </div>
-                <div class="bd-row">
-                    <span>(=) UTILIDAD NETA (EBIT)</span>
-                    <span class="bd-val" id="bd-net">$0</span>
-                </div>
+            <div style="margin: 15px 0;"></div>
+            <div class="st-row sub-row">
+                <span>(-) Gastos Operativos (Sueldos, Renta, Software)</span>
+                <span id="txt-ops">($0)</span>
+            </div>
+            <div class="st-row sub-row highlight-row" style="margin-bottom: 5px;">
+                <span>(-) Honorarios Agencia / Consultoría</span>
+                <span id="txt-agency">($0)</span>
             </div>
 
+            <div class="st-row">
+                <span>(=) Disponible para Publicidad (Pre-Ad Profit)</span>
+                <span id="txt-available" style="color:#aaa">$0</span>
+            </div>
+
+            <div class="st-row highlight-row" style="background: rgba(255, 68, 0, 0.1);">
+                <span>(-) Inversión Publicitaria (Ads)</span>
+                <span id="txt-ads">($0)</span>
+            </div>
+
+            <div class="st-row total-row">
+                <span>(=) UTILIDAD NETA FINAL</span>
+                <span id="txt-net">$0</span>
+            </div>
+        </div>
+
+        <div class="educational-tooltip">
+            <strong>🧠 Fundamentos del Cálculo:</strong><br>
+            <ul style="margin-left: 20px; margin-top: 10px;">
+                <li><strong>Costos Fijos vs Variables:</strong> Notarás que primero restamos lo que cuesta producir (Variable) y luego lo que cuesta operar (Fijo). Solo lo que sobra se puede invertir en publicidad.</li>
+                <li><strong>ROAS de Equilibrio Total:</strong> No solo calculamos el ROAS para pagar el producto. Este indicador (<span id="txt-be-expl">0.0x</span>) te dice cuánto debe retornar cada dólar de publicidad para cubrir TAMBIÉN tus sueldos y la agencia. Si el ROAS de mercado es menor a este número, el negocio no es viable.</li>
+            </ul>
         </div>
 
     </div>
@@ -390,168 +336,117 @@
 
 <script>
     function calculate() {
-        // --- 1. CAPTURAR DATOS ---
+        // --- 1. DATOS DE ENTRADA ---
         const revenue = parseFloat(document.getElementById('revenue').value) || 0;
+        
+        // Variables
         const price = parseFloat(document.getElementById('price').value) || 0;
-        const cogsUnit = parseFloat(document.getElementById('cogs').value) || 0;
-        const varPercent = parseFloat(document.getElementById('vars_percent').value) / 100 || 0;
+        const costUnit = parseFloat(document.getElementById('cost').value) || 0;
+        const taxPercent = parseFloat(document.getElementById('tax').value) / 100 || 0;
+        const feePercent = parseFloat(document.getElementById('fee').value) / 100 || 0;
         
-        // Costos Fijos
-        const opFixed = parseFloat(document.getElementById('fixed_ops').value) || 0;
-        const opSalary = parseFloat(document.getElementById('fixed_salary').value) || 0;
-        const opAgency = parseFloat(document.getElementById('fixed_agency').value) || 0;
-        const totalFixed = opFixed + opSalary + opAgency;
-
+        // Operativos Fijos
+        const fSalary = parseFloat(document.getElementById('fix_salary').value) || 0;
+        const fRent = parseFloat(document.getElementById('fix_rent').value) || 0;
+        const fSoft = parseFloat(document.getElementById('fix_soft').value) || 0;
+        const fAgency = parseFloat(document.getElementById('fix_agency').value) || 0; // Importante
+        
         // Mercado
-        const marketROAS = parseFloat(document.getElementById('niche').value) || 4.0;
+        const marketROAS = parseFloat(document.getElementById('niche').value);
 
-        if (revenue === 0 || price === 0) return;
+        if(revenue === 0 || price === 0) return;
 
-        // --- 2. CÁLCULOS MATEMÁTICOS ---
+        // --- 2. CÁLCULO FINANCIERO PASO A PASO ---
         
-        // Volumen de Ventas
-        const units = Math.ceil(revenue / price);
+        // A. Costos Variables Totales
+        const units = revenue / price;
+        const totalCOGS = units * costUnit;
+        const totalTaxFee = revenue * (taxPercent + feePercent);
+        const totalVariable = totalCOGS + totalTaxFee;
         
-        // Costos Variables Totales
-        const totalCOGS = units * cogsUnit;
-        const totalTaxes = revenue * varPercent;
-        const totalVariable = totalCOGS + totalTaxes;
-        
-        // Margen Bruto (Antes de Ops y Ads)
+        // B. Margen Bruto
         const grossMargin = revenue - totalVariable;
         
-        // Inversión Ads (Basada en Mercado)
+        // C. Costos Fijos Totales
+        const totalFixedOps = fSalary + fRent + fSoft; // Sin agencia
+        const totalFixedAll = totalFixedOps + fAgency; // Con agencia
+        
+        // D. Dinero Disponible para Ads (Pre-Ad Profit)
+        const availableForAds = grossMargin - totalFixedAll;
+        
+        // E. Inversión Publicitaria (Basada en ROAS Mercado)
         const adSpend = revenue / marketROAS;
         
-        // Utilidad Neta
-        const netProfit = grossMargin - totalFixed - adSpend;
-        const netMarginPerc = (netProfit / revenue) * 100;
+        // F. Utilidad Neta Final
+        const netProfit = availableForAds - adSpend;
+        const netMargin = (netProfit / revenue) * 100;
 
-        // Break Evens
-        // BE Operativo: Cuánto ROAS necesito para cubrir TODO (Var + Fijos + Ads)
-        // Formula derivada: Ingreso = CostoVar + CostoFijo + (Ingreso/ROAS)
-        // Despejando ROAS... es complejo, simplifiquemos:
-        // Necesito que (Ingreso - CostoVar - CostoFijo) sea > 0 antes de ads.
-        const moneyAvailableForAds = grossMargin - totalFixed;
-        let businessBreakEvenROAS = 0;
+        // --- 3. CÁLCULO DE BREAK-EVEN REAL (FUNDAMENTAL) ---
+        // El BE ROAS responde: "¿Cuánto debo generar por cada $ de ad para quedar en 0?"
+        // Formula: Ingreso = CostoVariable + CostoFijo + (Ingreso/BE_ROAS)
+        // BE_ROAS = Ingreso / (MargenBruto - CostosFijos)
         
-        if (moneyAvailableForAds <= 0) {
-            businessBreakEvenROAS = 999; // Imposible, ya perdiste antes de anunciar
+        let beROAS = 0;
+        if (availableForAds <= 0) {
+            // Si antes de pagar anuncios ya estás en negativo (por costos fijos altos)
+            beROAS = 999; // Infinito (Imposible)
         } else {
-            // ROAS = Ingreso / Inversión Máxima Posible (que es el dinero disponible)
-            businessBreakEvenROAS = revenue / moneyAvailableForAds;
+            beROAS = revenue / availableForAds;
         }
 
-        // --- 3. ACTUALIZAR UI ---
+        // --- 4. RENDERIZADO DE DATOS ---
         
-        // KPIs
-        document.getElementById('res-invest').innerText = fmtMoney(adSpend);
-        document.getElementById('res-profit').innerText = fmtMoney(netProfit);
-        document.getElementById('res-margin').innerText = netMarginPerc.toFixed(1) + "%";
+        // KPIs Superiores
+        document.getElementById('res-invest').innerText = fmt(adSpend);
+        document.getElementById('res-profit').innerText = fmt(netProfit);
+        document.getElementById('res-margin').innerText = netMargin.toFixed(1) + "% Margen Final";
         
-        const beEl = document.getElementById('res-be-total');
-        if (businessBreakEvenROAS > 50) {
-            beEl.innerText = "IMPOSIBLE";
-            beEl.style.color = "var(--danger)";
+        const beEl = document.getElementById('res-be');
+        const beExpl = document.getElementById('txt-be-expl');
+        
+        if (beROAS > 50) {
+            beEl.innerText = "NO VIABLE";
+            beEl.style.color = "var(--negative)";
+            beExpl.innerText = "Imposible";
         } else {
-            beEl.innerText = businessBreakEvenROAS.toFixed(2) + "x";
-            // Color logic for BE
-            if(businessBreakEvenROAS > marketROAS) beEl.style.color = "var(--danger)";
-            else beEl.style.color = "var(--success)";
+            beEl.innerText = beROAS.toFixed(2) + "x";
+            beExpl.innerText = beROAS.toFixed(2) + "x";
+            
+            // Color Logic
+            if(beROAS > marketROAS) {
+                beEl.style.color = "var(--negative)"; // Necesitas más de lo que el mercado da
+                document.getElementById('be-context').innerText = "Riesgo: Mayor al promedio del mercado ("+marketROAS+"x)";
+            } else {
+                beEl.style.color = "var(--positive)";
+                document.getElementById('be-context').innerText = "Saludable: Menor al promedio del mercado ("+marketROAS+"x)";
+            }
         }
-
-        // Breakdown List
-        document.getElementById('bd-rev').innerText = fmtMoney(revenue);
-        document.getElementById('bd-cogs').innerText = "-" + fmtMoney(totalVariable);
-        document.getElementById('bd-gross').innerText = fmtMoney(grossMargin);
-        document.getElementById('bd-ops').innerText = "-" + fmtMoney(totalFixed);
-        document.getElementById('bd-ads').innerText = "-" + fmtMoney(adSpend);
-        document.getElementById('bd-net').innerText = fmtMoney(netProfit);
-
-        // Chart Donut Logic
-        const pVar = (totalVariable / revenue) * 100;
-        const pOps = (totalFixed / revenue) * 100;
-        const pAds = (adSpend / revenue) * 100;
-        let pNet = netMarginPerc;
-        if(pNet < 0) pNet = 0;
-
-        // Construir gradiente cónico
-        // Start points
-        const s1 = 0; 
-        const e1 = pAds; // Orange
-        const e2 = e1 + pVar; // Grey
-        const e3 = e2 + pOps; // Dark
-        // El resto es verde o vacio
-
-        const donut = document.getElementById('profit-donut');
-        donut.style.background = `conic-gradient(
-            var(--primary) ${s1}% ${e1}%,
-            #444 ${e1}% ${e2}%,
-            #222 ${e2}% ${e3}%,
-            var(--success) ${e3}% 100%
-        )`;
         
-        document.getElementById('donut-val').innerText = netMarginPerc.toFixed(0) + "%";
+        // Estado de Resultados (Tabla)
+        document.getElementById('txt-rev').innerText = fmt(revenue);
+        document.getElementById('txt-cogs').innerText = "(" + fmt(totalCOGS) + ")";
+        document.getElementById('txt-vars').innerText = "(" + fmt(totalTaxFee) + ")";
+        document.getElementById('txt-gross').innerText = fmt(grossMargin);
         
-        // Legend text
-        document.getElementById('leg-vars').innerText = pVar.toFixed(1) + "%";
-        document.getElementById('leg-ops').innerText = pOps.toFixed(1) + "%";
-        document.getElementById('leg-ads').innerText = pAds.toFixed(1) + "%";
-        document.getElementById('leg-net').innerText = netMarginPerc.toFixed(1) + "%";
+        document.getElementById('txt-ops').innerText = "(" + fmt(totalFixedOps) + ")";
+        document.getElementById('txt-agency').innerText = "(" + fmt(fAgency) + ")";
+        
+        const availEl = document.getElementById('txt-available');
+        availEl.innerText = fmt(availableForAds);
+        availEl.style.color = availableForAds < 0 ? "var(--negative)" : "#fff";
 
-        // --- 4. DIAGNÓSTICO DE SALUD (HEALTH SCORE) ---
-        analyzeHealth(netMarginPerc, businessBreakEvenROAS, marketROAS, moneyAvailableForAds);
+        document.getElementById('txt-ads').innerText = "(" + fmt(adSpend) + ")";
+        
+        const netEl = document.getElementById('txt-net');
+        netEl.innerText = fmt(netProfit);
+        netEl.style.color = netProfit >= 0 ? "var(--positive)" : "var(--negative)";
     }
 
-    function analyzeHealth(margin, beROAS, marketROAS, moneyAvailable) {
-        const banner = document.getElementById('health-banner');
-        const title = document.getElementById('health-title');
-        const desc = document.getElementById('health-desc');
-        const score = document.getElementById('health-score');
-        const strip = document.querySelector('.health-banner::before'); // Pseudo access workaround via class toggle
-
-        let state = ""; // safe, warn, danger
-
-        if (moneyAvailable <= 0) {
-            // Pierde dinero antes de Ads
-            title.innerText = "ESTRUCTURA NO VIABLE";
-            desc.innerText = "Tus costos fijos y variables superan tus ingresos sin siquiera invertir en publicidad.";
-            score.innerText = "F";
-            score.style.color = "var(--danger)";
-            banner.style.borderColor = "var(--danger)";
-        } else if (beROAS > marketROAS) {
-            // Necesita un ROAS imposible
-            title.innerText = "ALTO RIESGO";
-            desc.innerText = `Necesitas un ROAS de ${beROAS.toFixed(2)}x para cubrir gastos, pero el mercado da ${marketROAS}x.`;
-            score.innerText = "D";
-            score.style.color = "var(--danger)";
-            banner.style.borderColor = "var(--danger)";
-        } else if (margin < 10) {
-            title.innerText = "MARGEN FRÁGIL";
-            desc.innerText = "El negocio es rentable pero cualquier imprevisto te pondrá en pérdidas.";
-            score.innerText = "C";
-            score.style.color = "var(--warning)";
-            banner.style.borderColor = "var(--warning)";
-        } else if (margin < 20) {
-            title.innerText = "NEGOCIO SALUDABLE";
-            desc.innerText = "Tienes una estructura sólida para invertir y crecer.";
-            score.innerText = "B";
-            score.style.color = "var(--success)";
-            banner.style.borderColor = "var(--success)";
-        } else {
-            title.innerText = "MÁQUINA DE DINERO";
-            desc.innerText = "Tu estructura de costos es excelente. Puedes escalar agresivamente.";
-            score.innerText = "A+";
-            score.style.color = "var(--success)";
-            banner.style.borderColor = "var(--success)";
-        }
-    }
-
-    function fmtMoney(num) {
+    function fmt(num) {
         return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
     }
 
-    // Init
+    // Inicializar
     calculate();
 </script>
 
